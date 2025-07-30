@@ -54,6 +54,8 @@ public class StatClient {
     private ServiceInstance getInstance() {
         try {
             List<ServiceInstance> instances = discoveryClient.getInstances(statsServiceId);
+            System.out.println("Найденные инстанты для " + statsServiceId + ": " + instances);
+
             if (instances == null || instances.isEmpty()) {
                 throw new RestClientException("No instances found for service: " + statsServiceId);
             }

@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: stat-server
   main.banner-mode: OFF
   jpa:
     hibernate:
