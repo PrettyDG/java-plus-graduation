@@ -48,3 +48,6 @@ spring:
     url: "jdbc:postgresql://ewm-db:5432/ewm-main"
 stat-service:
   host: stats-server
+
+stats-server:
+  url: 127.0.0.1:9090
