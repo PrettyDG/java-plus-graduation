@@ -14,4 +14,4 @@ spring:
     init:
       mode: always
 stat-server:
-  uri: http://stats-server:9090
+  service-id: stat-server
