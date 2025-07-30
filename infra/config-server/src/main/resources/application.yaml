@@ -1,6 +1,6 @@
 spring:
   application:
-    name: CONFIG-SERVER
+    name: config-server
   profiles:
     active: native
   cloud:
@@ -8,17 +8,19 @@ spring:
       server:
         native:
           searchLocations:
+            - classpath:config/stat/{application}
             - classpath:config/core/{application}
-            - classpath:config/stats/{application}
             - classpath:config/infra/{application}
 server:
   port: 0
+
 eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
   instance:
     preferIpAddress: true
+    non-secure-port: ${server.port}
     hostname: localhost
-    instance-id: "${spring.application.name}:${random.value}"
+    instance-id: ${spring.application.name}:${random.value}
     leaseRenewalIntervalInSeconds: 10

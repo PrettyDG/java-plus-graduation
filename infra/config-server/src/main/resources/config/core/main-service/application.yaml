@@ -1,22 +1,50 @@
+application:
+  date-time-format: yyyy-MM-dd HH:mm:ss
+
 spring:
+  main:
+    banner-mode: OFF
   jpa:
-    show-sql: true
-    properties:
-      hibernate:
-        jdbc:
-          time_zone: UTC
-  datasource:
-    driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://ewm-db:5432/ewm-main
-    username: postgres
-    password: password
+    hibernate:
+      ddl-auto: update
+      format_sql: true
+      jdbc:
+        time_zone: UTC
   sql:
     init:
       mode: always
-stat-server:
-  uri: http://stats-server:9090
+  datasource:
+    driverClassName: "org.postgresql.Driver"
+    username: "service"
+    password: "service"
+    url: "jdbc:postgresql://localhost:6543/ewm-main"
 
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+stat-service:
+  stat-server-id: "stats-server"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+logging:
+  level:
+    org.springframework:
+      orm.jpa: WARN
+      orm.jpa.JpaTransactionManager: WARN
+      transaction: WARN
+      transaction.interceptor: WARN
+
+server:
+  port: 0
+
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+  datasource:
+    url: "jdbc:postgresql://ewm-db:5432/ewm-main"
+stat-service:
+  host: stats-server
