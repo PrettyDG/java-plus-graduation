@@ -14,4 +14,4 @@ spring:
     init:
       mode: always
 stat-server:
-  service-id: stat-server
+  service-id: stats-server
