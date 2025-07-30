@@ -2,108 +2,29 @@ services:
   stats-db:
     image: postgres:16.1
     container_name: stats-db
-    restart: always
-    environment:
-      POSTGRES_DB: stats
-      POSTGRES_USER: stats_user
-      POSTGRES_PASSWORD: stats_password
     ports:
-      - "5433:5432"
-    networks:
-      - explore-network
-
-  stats-server:
-    build: ./stat/stat-server
-    container_name: stats-server
-    restart: always
-    depends_on:
-      - stats-db
-      - discovery-server
+      - "6541:5432"
     environment:
-      SPRING_PROFILES_ACTIVE: main
-      SPRING_DATASOURCE_URL: jdbc:postgresql://stats-db:5432/stats
-      SPRING_DATASOURCE_USERNAME: stats_user
-      SPRING_DATASOURCE_PASSWORD: stats_password
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka
-    ports:
-      - "9090:9090"
-    networks:
-      - explore-network
+      - POSTGRES_USER=stat
+      - POSTGRES_PASSWORD=stat
+      - POSTGRES_DB=stats-db
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
 
   ewm-db:
     image: postgres:16.1
     container_name: ewm-db
-    restart: always
+    ports:
+      - "6542:5432"
     environment:
-      POSTGRES_DB: explore
-      POSTGRES_USER: explore_user
-      POSTGRES_PASSWORD: explore_password
-    ports:
-      - "5432:5432"
-    networks:
-      - explore-network
-
-  ewm-service:
-    build: ./core/main-service
-    container_name: main-service
-    restart: always
-    depends_on:
-      - ewm-db
-      - stats-server
-      - config-server
-      - discovery-server
-    environment:
-      SPRING_PROFILES_ACTIVE: main
-      SPRING_DATASOURCE_URL: jdbc:postgresql://ewm-db:5432/explore
-      SPRING_DATASOURCE_USERNAME: explore_user
-      SPRING_DATASOURCE_PASSWORD: explore_password
-      STATS_SERVER_URL: http://stats-server:9090
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka
-      SPRING_CONFIG_IMPORT: configserver:http://config-server:8888/
-    ports:
-      - "8080:8080"
-    networks:
-      - explore-network
-
-  discovery-server:
-    build: ./infra/discovery-server
-    container_name: discovery-server
-    restart: always
-    ports:
-      - "8761:8761"
-    networks:
-      - explore-network
-
-  config-server:
-    build: ./infra/config-server
-    container_name: config-server
-    restart: always
-    depends_on:
-      - discovery-server
-    environment:
-      SPRING_PROFILES_ACTIVE: native
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka
-    ports:
-      - "8888:8888"
-    networks:
-      - explore-network
-
-  gateway-server:
-    build: ./infra/gateway-server
-    container_name: gateway-server
-    restart: always
-    depends_on:
-      - config-server
-      - discovery-server
-    environment:
-      SPRING_PROFILES_ACTIVE: main
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka
-      SPRING_CONFIG_IMPORT: configserver:http://config-server:8888/
-    ports:
-      - "8081:8081"
-    networks:
-      - explore-network
-
-networks:
-  explore-network:
-    driver: bridge
+      - POSTGRES_USER=stat
+      - POSTGRES_PASSWORD=stat
+      - POSTGRES_DB=ewm-db
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
