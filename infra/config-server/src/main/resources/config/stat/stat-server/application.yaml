@@ -10,10 +10,10 @@ spring:
       mode: always
 
   datasource:
-    driverClassName: "org.postgresql.Driver"
-    url: "jdbc:postgresql://localhost:6542/ewm-stats"
-    username: "stat"
-    password: "stat"
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/ewm-stats
+    username: postgres
+    password: password
 
 logging:
   level:

@@ -15,7 +15,7 @@ import java.util.List;
 public class StatClient {
     protected final RestClient restClient;
     private static final String HIT_ENDPOINT = "/hit";
-    private static final String STATS_ENDPOINT = "/stat";
+    private static final String STATS_ENDPOINT = "/stats";
 
     public StatClient(String baseUrl) {
         this.restClient = RestClient.builder()

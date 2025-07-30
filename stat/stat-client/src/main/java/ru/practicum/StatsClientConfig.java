@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class StatsClientConfig {
 
-    @Value("${stat-server.url}")
+    @Value("${stat-server.uri}")
     private String statsServerUrl;
 
     @Bean
