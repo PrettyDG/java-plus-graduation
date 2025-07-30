@@ -18,11 +18,13 @@ services:
     restart: always
     depends_on:
       - stats-db
+      - discovery-server
     environment:
       SPRING_PROFILES_ACTIVE: main
       SPRING_DATASOURCE_URL: jdbc:postgresql://stats-db:5432/stats
       SPRING_DATASOURCE_USERNAME: stats_user
       SPRING_DATASOURCE_PASSWORD: stats_password
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka
     ports:
       - "9090:9090"
     networks:
@@ -42,20 +44,63 @@ services:
       - explore-network
 
   ewm-service:
-    build: ./main-service
-    container_name: ewm-service
+    build: ./core/main-service
+    container_name: main-service
     restart: always
     depends_on:
       - ewm-db
       - stats-server
+      - config-server
+      - discovery-server
     environment:
       SPRING_PROFILES_ACTIVE: main
       SPRING_DATASOURCE_URL: jdbc:postgresql://ewm-db:5432/explore
       SPRING_DATASOURCE_USERNAME: explore_user
       SPRING_DATASOURCE_PASSWORD: explore_password
       STATS_SERVER_URL: http://stats-server:9090
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka
+      SPRING_CONFIG_IMPORT: configserver:http://config-server:8888/
     ports:
       - "8080:8080"
+    networks:
+      - explore-network
+
+  discovery-server:
+    build: ./infra/discovery-server
+    container_name: discovery-server
+    restart: always
+    ports:
+      - "8761:8761"
+    networks:
+      - explore-network
+
+  config-server:
+    build: ./infra/config-server
+    container_name: config-server
+    restart: always
+    depends_on:
+      - discovery-server
+    environment:
+      SPRING_PROFILES_ACTIVE: native
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka
+    ports:
+      - "8888:8888"
+    networks:
+      - explore-network
+
+  gateway-server:
+    build: ./infra/gateway-server
+    container_name: gateway-server
+    restart: always
+    depends_on:
+      - config-server
+      - discovery-server
+    environment:
+      SPRING_PROFILES_ACTIVE: main
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka
+      SPRING_CONFIG_IMPORT: configserver:http://config-server:8888/
+    ports:
+      - "8081:8081"
     networks:
       - explore-network
 
