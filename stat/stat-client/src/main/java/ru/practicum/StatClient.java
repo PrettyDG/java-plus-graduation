@@ -69,16 +69,27 @@ public class StatClient {
     private URI makeUri(String path) {
         ServiceInstance instance = retryTemplate.execute(context -> getInstance());
         return UriComponentsBuilder
-                .fromHttpUrl("http://" + instance.getHost() + ":" + instance.getPort() + path)
-                .build()
+                .newInstance()
+                .scheme("http")
+                .host(instance.getHost())
+                .port(instance.getPort())
+                .path(path)
+                .build(true)
                 .toUri();
     }
 
     private URI makeUri(String path, Map<String, Object> queryParams) {
         ServiceInstance instance = retryTemplate.execute(context -> getInstance());
+
         UriComponentsBuilder builder = UriComponentsBuilder
-                .fromHttpUrl("http://" + instance.getHost() + ":" + instance.getPort() + path);
+                .newInstance()
+                .scheme("http")
+                .host(instance.getHost())
+                .port(instance.getPort())
+                .path(path);
+
         queryParams.forEach(builder::queryParam);
+
         return builder.build(true).toUri();
     }
 
