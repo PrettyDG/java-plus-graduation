@@ -15,6 +15,8 @@ import ru.practicum.stat.dto.EndpointHitDto;
 import ru.practicum.stat.dto.ViewStatsDto;
 
 import java.net.URI;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,8 @@ public class StatClient {
 
     private static final String HIT_ENDPOINT = "/hit";
     private static final String STATS_ENDPOINT = "/stats";
+
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
     public StatClient(DiscoveryClient discoveryClient, String statsServiceId) {
         this.discoveryClient = discoveryClient;
@@ -107,18 +111,38 @@ public class StatClient {
                                                        List<String> uris,
                                                        boolean unique) {
         Map<String, Object> queryParams = new LinkedHashMap<>();
-        queryParams.put("start", start);
-        queryParams.put("end", end);
+
+        queryParams.put("start", formatDateTime(start));
+        queryParams.put("end", formatDateTime(end));
         queryParams.put("unique", unique);
+
         if (uris != null && !uris.isEmpty()) {
             queryParams.put("uris", String.join(",", uris));
         }
 
         URI uri = makeUri(STATS_ENDPOINT, queryParams);
 
+        System.out.println("Запрос к Stats URI: " + uri);
+
         return restClient.get()
                 .uri(uri)
                 .retrieve()
-                .toEntity(new ParameterizedTypeReference<>() {});
+                .toEntity(new ParameterizedTypeReference<>() {
+                });
+    }
+
+    private String formatDateTime(String dateTime) {
+        if (dateTime.contains("T")) {
+            return dateTime;
+        }
+
+
+        try {
+            LocalDateTime ldt = LocalDateTime.parse(dateTime.replace(" ", "T"));
+            return ldt.format(FORMATTER);
+        } catch (Exception e) {
+            System.err.println("Warning: неверный формат даты-времени: " + dateTime);
+            return dateTime.replace(" ", "T");
+        }
     }
 }
