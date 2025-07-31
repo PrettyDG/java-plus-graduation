@@ -5,7 +5,6 @@ import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
 import org.springframework.retry.backoff.FixedBackOffPolicy;
 import org.springframework.retry.policy.MaxAttemptsRetryPolicy;
 import org.springframework.retry.support.RetryTemplate;
@@ -16,7 +15,9 @@ import ru.practicum.stat.dto.EndpointHitDto;
 import ru.practicum.stat.dto.ViewStatsDto;
 
 import java.net.URI;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class StatClient {
     private final DiscoveryClient discoveryClient;
@@ -67,7 +68,18 @@ public class StatClient {
 
     private URI makeUri(String path) {
         ServiceInstance instance = retryTemplate.execute(context -> getInstance());
-        return URI.create("http://" + instance.getHost() + ":" + instance.getPort() + path);
+        return UriComponentsBuilder
+                .fromHttpUrl("http://" + instance.getHost() + ":" + instance.getPort() + path)
+                .build()
+                .toUri();
+    }
+
+    private URI makeUri(String path, Map<String, Object> queryParams) {
+        ServiceInstance instance = retryTemplate.execute(context -> getInstance());
+        UriComponentsBuilder builder = UriComponentsBuilder
+                .fromHttpUrl("http://" + instance.getHost() + ":" + instance.getPort() + path);
+        queryParams.forEach(builder::queryParam);
+        return builder.build(true).toUri();
     }
 
     public void saveStatEvent(EndpointHitDto endpointHitDto) {
@@ -83,26 +95,19 @@ public class StatClient {
                                                        String end,
                                                        List<String> uris,
                                                        boolean unique) {
-        String path = buildStatsUri(start, end, uris, unique);
-        URI uri = makeUri(path);
+        Map<String, Object> queryParams = new LinkedHashMap<>();
+        queryParams.put("start", start);
+        queryParams.put("end", end);
+        queryParams.put("unique", unique);
+        if (uris != null && !uris.isEmpty()) {
+            queryParams.put("uris", String.join(",", uris));
+        }
+
+        URI uri = makeUri(STATS_ENDPOINT, queryParams);
 
         return restClient.get()
                 .uri(uri)
                 .retrieve()
-                .toEntity(new ParameterizedTypeReference<>() {
-                });
-    }
-
-    private String buildStatsUri(String start, String end, @Nullable List<String> uris, boolean unique) {
-        UriComponentsBuilder builder = UriComponentsBuilder.fromPath(STATS_ENDPOINT)
-                .queryParam("start", start)
-                .queryParam("end", end)
-                .queryParam("unique", unique);
-
-        if (uris != null && !uris.isEmpty()) {
-            builder.queryParam("uris", String.join(",", uris));
-        }
-
-        return builder.build().toUriString();
+                .toEntity(new ParameterizedTypeReference<>() {});
     }
 }
