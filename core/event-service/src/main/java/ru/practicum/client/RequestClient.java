@@ -1,0 +1,24 @@
+package ru.practicum.client;
+
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.*;
+import ru.practicum.request.ParticipationRequestDto;
+import ru.practicum.request.RequestStatus;
+
+import java.util.List;
+
+@FeignClient(name = "request-service")
+public interface RequestClient {
+
+    @GetMapping("/requests/event/{eventId}")
+    List<ParticipationRequestDto> getRequestsByEventId(@PathVariable("eventId") Long eventId);
+
+    @GetMapping("/requests")
+    List<ParticipationRequestDto> getRequestsByIds(@RequestParam("ids") List<Long> ids);
+
+    @PostMapping("/requests/status")
+    List<ParticipationRequestDto> updateRequestStatuses(@RequestBody RequestStatus requestStatus);
+
+    @PostMapping("/requests/save-all")
+    List<ParticipationRequestDto> saveAll(@RequestBody List<ParticipationRequestDto> requests);
+}
