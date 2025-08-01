@@ -112,7 +112,7 @@ public class EventServiceImpl implements EventService {
         Event event = getEventById(eventId);
         UserDto userDto = getUserById(userId);
         CategoryDto categoryDto = getCategoryById(event.getCategoryId());
-        eventValidator.validateEventOwnership(event, (userId-1));
+        eventValidator.validateEventOwnership(event, (userId - 1));
         return EventMapper.toFullDto(event, categoryDto, userDto);
     }
 
@@ -123,7 +123,7 @@ public class EventServiceImpl implements EventService {
         log.info("updateUserEvent - " + userId + ", - " + eventId + ", -" + updateDto);
         Event event = getEventById(eventId);
 
-        eventValidator.validateUserUpdate(event, (userId-1), updateDto);
+        eventValidator.validateUserUpdate(event, (userId - 1), updateDto);
         applyUserUpdates(event, updateDto);
 
         Event updatedEvent = eventRepository.save(event);
@@ -138,7 +138,7 @@ public class EventServiceImpl implements EventService {
     public List<ParticipationRequestDto> getEventRequests(Long userId, Long eventId) {
         log.info("getEventRequests - " + userId + ", - " + eventId);
         Event event = getEventById(eventId);
-        eventValidator.validateEventOwnership(event, (userId-1));
+        eventValidator.validateEventOwnership(event, (userId - 1));
 
         return requestClient.getRequestsByEventId(eventId);
     }
