@@ -1,3 +1,11 @@
+CREATE TABLE IF NOT EXISTS locations (
+    id SERIAL PRIMARY KEY,
+    lat DOUBLE PRECISION NOT NULL,
+    lon DOUBLE PRECISION NOT NULL,
+    UNIQUE (lat, lon)
+);
+CREATE INDEX IF NOT EXISTS idx_locations_lat_lon ON locations(lat, lon);
+
 CREATE TABLE IF NOT EXISTS events (
     id BIGSERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
@@ -22,11 +30,3 @@ CREATE INDEX IF NOT EXISTS idx_events_initiator_id ON events(initiator_id);
 CREATE INDEX IF NOT EXISTS idx_events_state ON events(state);
 CREATE INDEX IF NOT EXISTS idx_events_location_id ON events(location_id);
 CREATE INDEX IF NOT EXISTS idx_events_paid ON events(paid);
-
-CREATE TABLE IF NOT EXISTS locations (
-    id SERIAL PRIMARY KEY,
-    lat DOUBLE PRECISION NOT NULL,
-    lon DOUBLE PRECISION NOT NULL,
-    UNIQUE (lat, lon)
-);
-CREATE INDEX IF NOT EXISTS idx_locations_lat_lon ON locations(lat, lon);
