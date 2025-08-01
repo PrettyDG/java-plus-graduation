@@ -36,6 +36,38 @@ public class RequestServiceImpl implements RequestService {
     private final EventClient eventClient;
     private final RequestValidator requestValidator;
 
+    @Override
+    public List<ParticipationRequestDto> findByEventId(Long eventId) {
+        log.debug("Запрос на получение заявок по событию с ID: {}", eventId);
+        return requestRepository.findByEventId(eventId).stream()
+                .map(RequestMapper::toRequestDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ParticipationRequestDto> findByIds(List<Long> ids) {
+        log.debug("Запрос на получение заявок по списку ID: {}", ids);
+        return requestRepository.findAllById(ids).stream()
+                .map(RequestMapper::toRequestDto)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    @Override
+    public List<ParticipationRequestDto> saveAll(List<ParticipationRequestDto> requestDtos) {
+        log.debug("Запрос на массовое сохранение заявок");
+
+        List<Request> requests = requestDtos.stream()
+                .map(RequestMapper::toEntity)
+                .collect(Collectors.toList());
+
+        List<Request> saved = requestRepository.saveAll(requests);
+
+        return saved.stream()
+                .map(RequestMapper::toRequestDto)
+                .collect(Collectors.toList());
+    }
+
     @Transactional(readOnly = true)
     @Override
     public List<ParticipationRequestDto> getUserRequests(Long userId) {

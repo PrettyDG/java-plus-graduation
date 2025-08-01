@@ -16,9 +16,6 @@ public interface RequestClient {
     @GetMapping("/requests")
     List<ParticipationRequestDto> getRequestsByIds(@RequestParam("ids") List<Long> ids);
 
-    @PostMapping("/requests/status")
-    List<ParticipationRequestDto> updateRequestStatuses(@RequestBody RequestStatus requestStatus);
-
     @PostMapping("/requests/save-all")
     List<ParticipationRequestDto> saveAll(@RequestBody List<ParticipationRequestDto> requests);
 }
