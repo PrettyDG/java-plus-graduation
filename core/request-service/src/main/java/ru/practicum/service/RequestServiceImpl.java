@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import ru.practicum.client.EventClient;
 import ru.practicum.client.UserClient;
 import ru.practicum.event.EventFullDto;
@@ -21,7 +20,6 @@ import ru.practicum.request.ParticipationRequestDto;
 import ru.practicum.request.RequestStatus;
 import ru.practicum.user.UserDto;
 import ru.practicum.validator.RequestValidator;
-
 
 import java.time.LocalDateTime;
 import java.util.List;

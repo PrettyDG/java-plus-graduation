@@ -2,8 +2,6 @@ package ru.practicum.compilation;
 
 import lombok.Builder;
 import lombok.Data;
-import ru.practicum.event.EventShortDto;
-
 
 import java.util.List;
 

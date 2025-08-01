@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.Data;
 import ru.practicum.event.EventShortDto;
 
-
 import java.time.LocalDateTime;
 
 @Data

@@ -1,4 +1,5 @@
 package ru.practicum.category.model;
+
 import jakarta.persistence.*;
 import lombok.*;
 

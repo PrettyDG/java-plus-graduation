@@ -3,7 +3,6 @@ package ru.practicum.validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-
 import ru.practicum.client.UserClient;
 import ru.practicum.event.EventState;
 import ru.practicum.event.UpdateEventUserRequest;
@@ -14,7 +13,6 @@ import ru.practicum.model.Event;
 import ru.practicum.request.ParticipationRequestDto;
 import ru.practicum.request.RequestStatus;
 import ru.practicum.user.UserDto;
-
 
 import java.time.LocalDateTime;
 import java.util.List;

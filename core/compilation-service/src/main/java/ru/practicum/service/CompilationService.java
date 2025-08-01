@@ -1,7 +1,6 @@
 package ru.practicum.service;
 
 
-
 import ru.practicum.compilation.CompilationDto;
 import ru.practicum.compilation.NewCompilationDto;
 import ru.practicum.compilation.UpdateCompilationRequest;

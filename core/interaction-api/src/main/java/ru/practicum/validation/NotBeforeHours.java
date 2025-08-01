@@ -11,7 +11,10 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface NotBeforeHours {
     String message() default "Дата должна быть не раньше, чем через {hours} часов от текущего времени";
+
     int hours() default 2;
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 }

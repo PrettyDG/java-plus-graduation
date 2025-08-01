@@ -2,10 +2,7 @@ package ru.practicum.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import ru.practicum.category.CategoryDto;
 import ru.practicum.event.EventState;
-import ru.practicum.user.UserDto;
-
 
 import java.time.LocalDateTime;
 

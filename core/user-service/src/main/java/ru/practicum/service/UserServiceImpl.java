@@ -11,7 +11,6 @@ import ru.practicum.model.User;
 import ru.practicum.repository.UserRepository;
 import ru.practicum.user.UserDto;
 
-
 import java.util.List;
 import java.util.stream.Collectors;
 

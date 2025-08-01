@@ -8,10 +8,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class StatsClientConfig {
 
+    private final DiscoveryClient discoveryClient;
     @Value("${stat-server.service-id}")
     private String statsServiceId;
-
-    private final DiscoveryClient discoveryClient;
 
     public StatsClientConfig(DiscoveryClient discoveryClient) {
         this.discoveryClient = discoveryClient;

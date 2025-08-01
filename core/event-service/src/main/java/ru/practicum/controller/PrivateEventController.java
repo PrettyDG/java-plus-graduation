@@ -20,7 +20,6 @@ import ru.practicum.request.EventRequestStatusUpdateRequest;
 import ru.practicum.request.ParticipationRequestDto;
 import ru.practicum.service.EventService;
 
-
 import java.util.List;
 import java.util.Map;
 

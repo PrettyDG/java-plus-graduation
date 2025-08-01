@@ -20,6 +20,7 @@ import ru.practicum.exceptions.NotFoundException;
 import ru.practicum.exceptions.ValidationException;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
+
 import java.util.List;
 
 @Service

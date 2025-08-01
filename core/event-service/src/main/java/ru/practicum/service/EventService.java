@@ -2,13 +2,9 @@ package ru.practicum.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.event.*;
 import ru.practicum.request.EventRequestStatusUpdateRequest;
 import ru.practicum.request.ParticipationRequestDto;
-
 
 import java.util.List;
 import java.util.Map;

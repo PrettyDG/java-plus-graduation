@@ -1,19 +1,11 @@
 package ru.practicum.mapper;
 
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
-import org.springframework.stereotype.Service;
-import ru.practicum.client.EventClient;
 import ru.practicum.compilation.CompilationDto;
 import ru.practicum.compilation.NewCompilationDto;
-import ru.practicum.event.EventFullDto;
-import ru.practicum.event.EventShortDto;
 import ru.practicum.model.Compilation;
 
-
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @UtilityClass
 public class CompilationMapper {

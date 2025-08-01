@@ -1,7 +1,6 @@
 package ru.practicum.mapper;
 
 
-
 import ru.practicum.category.CategoryDto;
 import ru.practicum.event.EventFullDto;
 import ru.practicum.event.EventShortDto;

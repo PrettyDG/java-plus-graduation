@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import ru.practicum.event.EventFullDto;
 import ru.practicum.event.EventState;
 import ru.practicum.event.SearchAdminEventsParamDto;

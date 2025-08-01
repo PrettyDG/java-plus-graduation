@@ -11,6 +11,8 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface NotOnlySpaces {
     String message() default "Category name cannot be only whitespace";
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 }

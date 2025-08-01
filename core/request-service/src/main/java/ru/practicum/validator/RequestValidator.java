@@ -3,7 +3,6 @@ package ru.practicum.validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import ru.practicum.event.EventFullDto;
 import ru.practicum.event.EventState;
 import ru.practicum.exceptions.ConflictException;

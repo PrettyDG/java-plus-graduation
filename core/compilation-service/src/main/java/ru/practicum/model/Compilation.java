@@ -2,10 +2,8 @@ package ru.practicum.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import ru.practicum.event.EventFullDto;
 
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "compilations",

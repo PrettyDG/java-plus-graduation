@@ -22,9 +22,8 @@ import java.util.List;
 @Validated
 public class PrivateCommentController {
 
-    private final CommentService commentService;
     private static final Sort DEFAULT_SORT = Sort.by(Sort.Direction.DESC, "created");
-
+    private final CommentService commentService;
 
     @GetMapping("/events/{eventId}/comments")
     public ResponseEntity<List<CommentResponseDto>> findAll(@PathVariable @Positive Long userId,
