@@ -161,7 +161,7 @@ public class EventServiceImpl implements EventService {
 
                     // Фильтр по пользователям
                     if (searchParams.getUsers() != null && !searchParams.getUsers().isEmpty()) {
-                        predicates.add(root.get("initiator").get("id").in(searchParams.getUsers()));
+                        predicates.add(root.get("initiatorId").in(searchParams.getUsers()));
                     }
 
                     // Фильтр по состояниям
