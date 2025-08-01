@@ -2,7 +2,6 @@ package ru.practicum.service;
 
 
 import ru.practicum.request.ParticipationRequestDto;
-import ru.practicum.request.RequestStatus;
 
 import java.util.List;
 

@@ -3,7 +3,6 @@ package ru.practicum.client;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.request.ParticipationRequestDto;
-import ru.practicum.request.RequestStatus;
 
 import java.util.List;
 
