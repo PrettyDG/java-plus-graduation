@@ -17,7 +17,7 @@ public class UpdateEventAdminRequest {
     @Size(min = 20, max = 7000)
     String description;
     @Future
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime eventDate;
     LocationDto location;
     Boolean paid;

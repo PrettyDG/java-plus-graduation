@@ -30,7 +30,7 @@ public class Request {
     @JoinColumn(name = "status_id", nullable = false)
     private RequestStatusEntity status;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "created")
     private LocalDateTime created;
 }

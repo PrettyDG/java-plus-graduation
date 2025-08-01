@@ -31,7 +31,7 @@ public class Comment {
     @JoinColumn(name = "author_id")
     private Long authorId;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "created")
     private LocalDateTime created;
 }
