@@ -1,5 +1,6 @@
 package ru.practicum.validator;
 
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -12,7 +13,6 @@ import ru.practicum.exceptions.ValidationException;
 import ru.practicum.model.Event;
 import ru.practicum.request.ParticipationRequestDto;
 import ru.practicum.request.RequestStatus;
-import ru.practicum.user.UserDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,9 +25,15 @@ public class EventValidator {
     private final UserClient userClient;
 
     public void validateUserExists(Long userId) {
-        if (!userClient.existsById(userId)) {
-            log.error("Пользователя с id {} не найден", userId);
-            throw new NotFoundException("Пользователя с id не найден: " + userId);
+        try {
+            Boolean exists = userClient.existsById(userId);
+            if (exists == null || !exists) {
+                log.error("Пользователь с id {} не найден", userId);
+                throw new NotFoundException("Пользователь с id не найден: " + userId);
+            }
+        } catch (FeignException.NotFound ex) {
+            log.error("Пользователь с id {} не найден (Feign 404)", userId);
+            throw new NotFoundException("Пользователь с id не найден: " + userId);
         }
     }
 
@@ -71,8 +77,8 @@ public class EventValidator {
         }
     }
 
-    public void validateUserUpdate(Event oldEvent, UserDto user, UpdateEventUserRequest updateDto) {
-        if (!oldEvent.getInitiatorId().equals(user.getId())) {
+    public void validateUserUpdate(Event oldEvent, Long user, UpdateEventUserRequest updateDto) {
+        if (!oldEvent.getInitiatorId().equals(user)) {
             throw new ValidationException("Только пользователь создавший событие может его редактировать");
         }
         if (oldEvent.getState().equals(EventState.PUBLISHED)) {

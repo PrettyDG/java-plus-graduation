@@ -1,6 +1,7 @@
 package ru.practicum.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
@@ -40,9 +42,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> getById(Long id) {
-        return userRepository.findById(id).stream()
+        List<UserDto> userDtos = userRepository.findById(id).stream()
                 .map(UserMapper::toDto)
                 .collect(Collectors.toList());
+        log.info("Возвращаем - " + userDtos);
+        return userDtos;
+    }
+
+    @Override
+    public UserDto getUser(Long id) {
+        UserDto userDto = UserMapper.toDto(userRepository.findById(id).get());
+        log.info("Возвращаем - " + userDto);
+        return userDto;
     }
 
     @Override

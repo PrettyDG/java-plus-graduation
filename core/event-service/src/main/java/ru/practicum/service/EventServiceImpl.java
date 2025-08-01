@@ -55,7 +55,11 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventShortDto getEventShort(Long id) {
-        return EventMapper.toShortDto(eventRepository.findById(id).get());
+        Event event = eventRepository.findById(id).get();
+        CategoryDto categoryDto = getCategoryById(event.getCategoryId());
+        UserDto userDto = getUserById(event.getInitiatorId());
+
+        return EventMapper.toShortDto(event, categoryDto, userDto);
     }
 
     @Override
@@ -72,24 +76,28 @@ public class EventServiceImpl implements EventService {
 
         return eventRepository.findByInitiatorId(userId, pageable)
                 .stream()
-                .map(EventMapper::toShortDto)
+                .map(event -> {
+                    CategoryDto categoryDto = getCategoryById(event.getCategoryId());
+                    UserDto userDto = getUserById(event.getInitiatorId());
+                    return EventMapper.toShortDto(event, categoryDto, userDto);
+                })
                 .collect(Collectors.toList());
     }
 
     @Override
     public EventFullDto createEvent(Long userId, NewEventDto request) {
-        UserDto user = getUserById(userId);
+        UserDto userDto = getUserById(userId);
         CategoryDto category = getCategoryById(request.getCategory());
         Location location = resolveLocation(LocationMapper.toLocation(request.getLocation()));
 
-        Event event = EventMapper.toEvent(request, user, category);
+        Event event = EventMapper.toEvent(request, userId, category);
         event.setLocation(location);
         event.setState(EventState.PENDING);
 
         Event savedEvent = eventRepository.save(event);
         log.info("Событие успешно добавлено под id {} со статусом {} и ожидается подтверждение",
-                user.getId(), event.getState());
-        return EventMapper.toFullDto(savedEvent);
+                userId, event.getState());
+        return EventMapper.toFullDto(savedEvent, category, userDto);
     }
 
     @Transactional(readOnly = true)
@@ -97,23 +105,26 @@ public class EventServiceImpl implements EventService {
     public EventFullDto getUserEventById(Long userId,
                                          Long eventId) {
         Event event = getEventById(eventId);
+        UserDto userDto = getUserById(userId);
+        CategoryDto categoryDto = getCategoryById(event.getCategoryId());
         eventValidator.validateEventOwnership(event, userId);
-        return EventMapper.toFullDto(event);
+        return EventMapper.toFullDto(event, categoryDto, userDto);
     }
 
     @Override
     public EventFullDto updateUserEvent(Long userId,
                                         Long eventId,
                                         UpdateEventUserRequest updateDto) {
-        UserDto user = getUserById(userId);
         Event event = getEventById(eventId);
 
-        eventValidator.validateUserUpdate(event, user, updateDto);
+        eventValidator.validateUserUpdate(event, userId, updateDto);
         applyUserUpdates(event, updateDto);
 
         Event updatedEvent = eventRepository.save(event);
+        UserDto userDto = getUserById(userId);
+        CategoryDto categoryDto = getCategoryById(event.getCategoryId());
         log.info("Событие успешно обновлено под id {} и дожидается подтверждения", eventId);
-        return EventMapper.toFullDto(updatedEvent);
+        return EventMapper.toFullDto(updatedEvent, categoryDto, userDto);
     }
 
     @Transactional(readOnly = true)
@@ -169,7 +180,11 @@ public class EventServiceImpl implements EventService {
 
                     return cb.and(predicates.toArray(new Predicate[0]));
                 }, searchParams.getPageRequest()).stream()
-                .map(EventMapper::toFullDto)
+                .map(event -> {
+                    CategoryDto categoryDto = getCategoryById(event.getCategoryId());
+                    UserDto userDto = getUserById(event.getInitiatorId());
+                    return EventMapper.toFullDto(event, categoryDto, userDto);
+                })
                 .collect(Collectors.toList());
     }
 
@@ -184,7 +199,9 @@ public class EventServiceImpl implements EventService {
         applyAdminUpdates(oldEvent, updateEventAdminRequest);
         Event event = eventRepository.save(oldEvent);
         log.info("Событие успешно обновлено администратором");
-        return EventMapper.toFullDto(event);
+        CategoryDto categoryDto = getCategoryById(event.getCategoryId());
+        UserDto userDto = getUserById(event.getInitiatorId());
+        return EventMapper.toFullDto(event, categoryDto, userDto);
     }
 
     private void handleStateUpdateEventAdminRequest(StateAction action, Event event) {
@@ -265,7 +282,9 @@ public class EventServiceImpl implements EventService {
         if (!event.getState().equals(EventState.PUBLISHED)) {
             throw new NotFoundException("У события должен быть статус <PUBLISHED>");
         }
-        return EventMapper.toFullDto(event);
+        UserDto userDto = getUserById(event.getInitiatorId());
+        CategoryDto categoryDto = getCategoryById(event.getCategoryId());
+        return EventMapper.toFullDto(event, categoryDto, userDto);
     }
 
     private List<EventShortDto> paginateAndMap(List<Event> events, PageRequest pageRequest) {
@@ -274,7 +293,11 @@ public class EventServiceImpl implements EventService {
                 .toList();
 
         return paginatedEvents.stream()
-                .map(EventMapper::toShortDto)
+                .map(event -> {
+                    CategoryDto categoryDto = getCategoryById(event.getCategoryId());
+                    UserDto userDto = getUserById(event.getInitiatorId());
+                    return EventMapper.toShortDto(event, categoryDto, userDto);
+                })
                 .toList();
     }
 

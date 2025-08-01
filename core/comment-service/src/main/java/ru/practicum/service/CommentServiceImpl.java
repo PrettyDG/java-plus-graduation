@@ -129,7 +129,7 @@ public class CommentServiceImpl implements CommentService {
 
     private UserDto getUserById(Long userId) {
         try {
-            return userClient.getUserById(userId);
+            return userClient.getUser(userId);
         } catch (FeignException.NotFound e) {
             throw new NotFoundException("Пользователь с id = " + userId + " не найден");
         }

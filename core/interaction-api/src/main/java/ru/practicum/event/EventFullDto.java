@@ -3,6 +3,8 @@ package ru.practicum.event;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Data;
+import ru.practicum.category.CategoryDto;
+import ru.practicum.user.UserDto;
 
 import java.time.LocalDateTime;
 
@@ -10,7 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 public class EventFullDto {
     private String annotation;
-    private Long categoryId;
+    private CategoryDto category;
     private Integer confirmedRequests;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdOn;
@@ -18,7 +20,7 @@ public class EventFullDto {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate;
     private Long id;
-    private Long initiatorId;
+    private UserDto initiator;
     private LocationDto location;
     private Boolean paid;
     private Integer participantLimit;

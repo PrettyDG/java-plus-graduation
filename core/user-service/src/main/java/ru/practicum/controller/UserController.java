@@ -3,6 +3,7 @@ package ru.practicum.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,12 +14,14 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 @RequestMapping("/admin/users")
 public class UserController {
     private final UserService userService;
 
     @PostMapping
     public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto) {
+        log.info("createUser у UserController - " + userDto);
         return new ResponseEntity<>(userService.create(userDto), HttpStatus.CREATED);
     }
 
@@ -37,8 +40,16 @@ public class UserController {
 
     @GetMapping(params = "ids")
     public ResponseEntity<List<UserDto>> getUserById(@RequestParam Long ids) {
+        log.info("getUserById запрос к UserController - " + ids);
         return ResponseEntity.ok(userService.getById(ids));
     }
+
+    @GetMapping("/{id}")
+    public UserDto getUser(@PathVariable("id") Long userId) {
+        log.info("getUser у UserController - " + userId);
+        return userService.getUser(userId);
+    }
+
 
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

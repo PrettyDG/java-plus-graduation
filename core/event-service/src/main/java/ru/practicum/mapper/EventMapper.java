@@ -14,11 +14,11 @@ import java.time.LocalDateTime;
 public class EventMapper {
 
     public static Event toEvent(NewEventDto newEventDto,
-                                UserDto initiator,
+                                Long initiator,
                                 CategoryDto category) {
 
         return Event.builder()
-                .initiatorId(initiator.getId())
+                .initiatorId(initiator)
                 .annotation(newEventDto.getAnnotation())
                 .categoryId(category.getId())
                 .description(newEventDto.getDescription())
@@ -34,30 +34,30 @@ public class EventMapper {
                 .build();
     }
 
-    public static EventShortDto toShortDto(Event event) {
+    public static EventShortDto toShortDto(Event event, CategoryDto categoryDto, UserDto userDto) {
         return EventShortDto.builder()
                 .annotation(event.getAnnotation())
-                .categoryId(event.getCategoryId())
+                .categoryId(categoryDto)
                 .confirmedRequests(event.getConfirmedRequests())
                 .eventDate(event.getEventDate())
                 .id(event.getId())
-                .initiatorId(event.getInitiatorId())
+                .initiatorId(userDto)
                 .paid(event.getPaid())
                 .title(event.getTitle())
                 .views(0L)
                 .build();
     }
 
-    public static EventFullDto toFullDto(Event event) {
+    public static EventFullDto toFullDto(Event event, CategoryDto category, UserDto initiator) {
         return EventFullDto.builder()
                 .annotation(event.getAnnotation())
-                .categoryId(event.getCategoryId())
+                .category(category)
                 .confirmedRequests(event.getConfirmedRequests())
                 .createdOn(event.getCreatedOn())
                 .description(event.getDescription())
                 .eventDate(event.getEventDate())
                 .id(event.getId())
-                .initiatorId(event.getInitiatorId())
+                .initiator(initiator)
                 .location(LocationMapper.toDto(event.getLocation()))
                 .paid(event.getPaid())
                 .participantLimit(event.getParticipantLimit())

@@ -81,7 +81,7 @@ public class RequestServiceImpl implements RequestService {
 
     private UserDto getUserById(Long userId) {
         try {
-            return userClient.getUserById(userId);
+            return userClient.getUser(userId);
         } catch (FeignException.NotFound e) {
             throw new NotFoundException("Не найден пользователь с ID: " + userId);
         }
