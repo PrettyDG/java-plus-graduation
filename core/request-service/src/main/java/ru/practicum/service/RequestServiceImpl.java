@@ -39,23 +39,27 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public List<ParticipationRequestDto> findByEventId(Long eventId) {
         log.debug("Запрос на получение заявок по событию с ID: {}", eventId);
-        return requestRepository.findByEventId(eventId).stream()
+        List<ParticipationRequestDto> result = requestRepository.findByEventId(eventId).stream()
                 .map(RequestMapper::toRequestDto)
                 .collect(Collectors.toList());
+        log.info("Найдено {} заявок для события с ID: {}", result.size(), eventId);
+        return result;
     }
 
     @Override
     public List<ParticipationRequestDto> findByIds(List<Long> ids) {
         log.debug("Запрос на получение заявок по списку ID: {}", ids);
-        return requestRepository.findAllById(ids).stream()
+        List<ParticipationRequestDto> result = requestRepository.findAllById(ids).stream()
                 .map(RequestMapper::toRequestDto)
                 .collect(Collectors.toList());
+        log.info("Найдено {} заявок по списку ID", result.size());
+        return result;
     }
 
     @Transactional
     @Override
     public List<ParticipationRequestDto> saveAll(List<ParticipationRequestDto> requestDtos) {
-        log.debug("Запрос на массовое сохранение заявок");
+        log.debug("Запрос на массовое сохранение заявок: {}", requestDtos.size());
 
         List<Request> requests = requestDtos.stream()
                 .map(RequestMapper::toEntity)
@@ -63,24 +67,30 @@ public class RequestServiceImpl implements RequestService {
 
         List<Request> saved = requestRepository.saveAll(requests);
 
-        return saved.stream()
+        List<ParticipationRequestDto> result = saved.stream()
                 .map(RequestMapper::toRequestDto)
                 .collect(Collectors.toList());
+
+        log.info("Массовое сохранение заявок завершено, сохранено: {}", result.size());
+        return result;
     }
 
     @Transactional(readOnly = true)
     @Override
     public List<ParticipationRequestDto> getUserRequests(Long userId) {
         log.debug("Запрос на получение всех заявок участия пользователя с ID: {}", userId);
-        return requestRepository.findByRequesterId(userId).stream()
+        List<ParticipationRequestDto> result = requestRepository.findByRequesterId(userId).stream()
                 .map(RequestMapper::toRequestDto)
                 .collect(Collectors.toList());
+        log.info("Найдено {} заявок пользователя с ID: {}", result.size(), userId);
+        return result;
     }
 
     @Override
     public ParticipationRequestDto createParticipationRequest(Long userId, Long eventId) {
+        log.debug("Создание заявки на участие пользователя с ID: {} для события с ID: {}", userId, eventId);
         final UserDto user = getUserById(userId);
-        final EventFullDto event = getEventById(eventId);
+        final EventFullDto event = getEventById(userId, eventId);
 
         requestValidator.validateRequestCreation(user, event);
 
@@ -90,13 +100,13 @@ public class RequestServiceImpl implements RequestService {
         final Request savedRequest = requestRepository.save(request);
         updateEventStatistics(event, request.getStatus().getName());
 
-        log.info("Заявка на участие сохранена со статусом с ID: {} и статусом: {}",
-                savedRequest.getId(), savedRequest.getStatus());
+        log.info("Заявка на участие создана с ID: {} и статусом: {}", savedRequest.getId(), savedRequest.getStatus());
         return RequestMapper.toRequestDto(savedRequest);
     }
 
     @Override
     public ParticipationRequestDto cancelParticipationRequest(Long userId, Long requestId) {
+        log.debug("Отмена заявки на участие с ID: {} пользователем с ID: {}", requestId, userId);
         final UserDto user = getUserById(userId);
         final Request request = getRequestById(requestId);
 
@@ -107,37 +117,54 @@ public class RequestServiceImpl implements RequestService {
             adjustEventConfirmedRequests(request.getEventId(), -1);
         }
 
-        log.info("Заявка на участие с id = {} отменена пользователем ID: {}", requestId, userId);
+        log.info("Заявка на участие с ID: {} отменена пользователем с ID: {}", requestId, userId);
         return RequestMapper.toRequestDto(request);
     }
 
     private UserDto getUserById(Long userId) {
+        log.debug("Получение пользователя по ID: {}", userId);
         try {
-            return userClient.getUser(userId);
+            UserDto user = userClient.getUser(userId);
+            log.info("Пользователь найден с ID: {}", userId);
+            return user;
         } catch (FeignException.NotFound e) {
+            log.error("Пользователь с ID: {} не найден", userId);
             throw new NotFoundException("Не найден пользователь с ID: " + userId);
         }
     }
 
-    private EventFullDto getEventById(Long eventId) {
+    private EventFullDto getEventById(Long userId, Long eventId) {
+        log.debug("Получение события по ID: {}", eventId);
         try {
-            return eventClient.getEventById(eventId);
+            EventFullDto event = eventClient.getEventById(userId, eventId);
+            log.info("Событие найдено с ID: {}", eventId);
+            return event;
         } catch (FeignException.NotFound e) {
+            log.error("Событие с ID: {} не найдено", eventId);
             throw new NotFoundException("Не найдено событие с ID: " + eventId);
         }
     }
 
     private Request getRequestById(Long requestId) {
+        log.debug("Получение заявки по ID: {}", requestId);
         return requestRepository.findById(requestId)
-                .orElseThrow(() -> new NotFoundException("Не найдена заявка с ID: " + requestId));
+                .orElseThrow(() -> {
+                    log.error("Заявка с ID: {} не найдена", requestId);
+                    return new NotFoundException("Не найдена заявка с ID: " + requestId);
+                });
     }
 
     private RequestStatusEntity getRequestStatusEntityByRequestStatus(RequestStatus newStatus) {
+        log.debug("Получение сущности статуса по статусу: {}", newStatus);
         return requestStatusRepository.findByName(newStatus)
-                .orElseThrow(() -> new NotFoundException("Не найден статус: " + newStatus.name()));
+                .orElseThrow(() -> {
+                    log.error("Статус не найден: {}", newStatus.name());
+                    return new NotFoundException("Не найден статус: " + newStatus.name());
+                });
     }
 
     private Request buildNewRequest(UserDto user, EventFullDto event) {
+        log.debug("Построение новой заявки для пользователя ID: {} и события ID: {}", user.getId(), event.getId());
         RequestStatusEntity requestStatusEntity = getRequestStatusEntityByRequestStatus(RequestStatus.PENDING);
         return Request.builder()
                 .requesterId(user.getId())
@@ -148,44 +175,60 @@ public class RequestServiceImpl implements RequestService {
     }
 
     private void determineInitialStatus(EventFullDto event, Request request) {
+        log.debug("Определение начального статуса для заявки на событие с ID: {}", event.getId());
         if (shouldAutoConfirm(event)) {
             request.setStatus(getRequestStatusEntityByRequestStatus(RequestStatus.CONFIRMED));
+            log.info("Заявка будет автоматически подтверждена");
         } else if (isEventFull(event)) {
             request.setStatus(getRequestStatusEntityByRequestStatus(RequestStatus.REJECTED));
+            log.info("Событие заполнено, заявка будет отклонена");
+        } else {
+            log.info("Заявка останется в статусе ожидания подтверждения");
         }
     }
 
     private boolean shouldAutoConfirm(EventFullDto event) {
-        return event.getParticipantLimit() == 0 ||
+        boolean result = event.getParticipantLimit() == 0 ||
                 (!event.getRequestModeration() && hasAvailableSlots(event));
+        log.debug("Проверка авто-подтверждения заявки: {}", result);
+        return result;
     }
 
     private boolean isEventFull(EventFullDto event) {
-        return event.getParticipantLimit() > 0 &&
+        boolean result = event.getParticipantLimit() > 0 &&
                 event.getConfirmedRequests() >= event.getParticipantLimit();
+        log.debug("Проверка заполненности события: {}", result);
+        return result;
     }
 
     private boolean hasAvailableSlots(EventFullDto event) {
-        return event.getConfirmedRequests() < event.getParticipantLimit();
+        boolean result = event.getConfirmedRequests() < event.getParticipantLimit();
+        log.debug("Проверка доступных слотов в событии: {}", result);
+        return result;
     }
 
     private void updateEventStatistics(EventFullDto event, RequestStatus status) {
+        log.debug("Обновление статистики события с ID: {}, статус заявки: {}", event.getId(), status);
         if (status == RequestStatus.CONFIRMED) {
             adjustEventConfirmedRequests(event.getId(), 1);
+            log.info("Статистика события обновлена: увеличено количество подтвержденных заявок");
         }
     }
 
     //TODO
     private void adjustEventConfirmedRequests(Long eventId, int delta) {
+        log.debug("Изменение количества подтвержденных заявок события с ID: {} на {}", eventId, delta);
         eventClient.updateConfirmedRequests(eventId, delta);
     }
 
     private void updateRequestStatus(Request request, RequestStatus newStatus) {
+        log.debug("Обновление статуса заявки с ID: {} с {} на {}", request.getId(), request.getStatus().getName(), newStatus);
         String currentStatusName = request.getStatus().getName().name();
         if (currentStatusName.equals(newStatus.name())) {
+            log.error("Попытка установить уже существующий статус: {}", newStatus);
             throw new ValidationException("Статус уже установлен: " + newStatus);
         }
         request.setStatus(getRequestStatusEntityByRequestStatus(newStatus));
+        log.info("Статус заявки с ID: {} обновлен на {}", request.getId(), newStatus);
     }
 }
-

@@ -73,7 +73,7 @@ public class EventValidator {
 
     public void validateEventOwnership(Event event, Long userId) {
         if (!event.getInitiatorId().equals(userId)) {
-            throw new ValidationException("Только пользователь создавший событие может получить его полное описание");
+            throw new ValidationException("Только пользователь создавший событие может получить его полное описание - eventUserId" + event.getInitiatorId());
         }
     }
 

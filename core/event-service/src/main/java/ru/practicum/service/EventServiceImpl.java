@@ -55,6 +55,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventShortDto getEventShort(Long id) {
+        log.info("getEventShort - " + id);
         Event event = eventRepository.findById(id).get();
         CategoryDto categoryDto = getCategoryById(event.getCategoryId());
         UserDto userDto = getUserById(event.getInitiatorId());
@@ -64,6 +65,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventShortDto> getEventsShortDto(List<Long> ids) {
+        log.info("getEventsShortDto - " + ids);
         return ids.stream()
                 .map(this::getEventShort)
                 .collect(Collectors.toList());
@@ -72,6 +74,7 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional(readOnly = true)
     public List<EventShortDto> getUserEvents(Long userId, Pageable pageable) {
+        log.info("getUserEvents - " + userId + ", - " + pageable);
         eventValidator.validateUserExists(userId);
 
         return eventRepository.findByInitiatorId(userId, pageable)
@@ -86,6 +89,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventFullDto createEvent(Long userId, NewEventDto request) {
+        log.info("createEvent - " + userId + ", - " + request);
         UserDto userDto = getUserById(userId);
         CategoryDto category = getCategoryById(request.getCategory());
         Location location = resolveLocation(LocationMapper.toLocation(request.getLocation()));
@@ -104,10 +108,11 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto getUserEventById(Long userId,
                                          Long eventId) {
+        log.info("getUserEventById - " + userId + ", - " + eventId);
         Event event = getEventById(eventId);
         UserDto userDto = getUserById(userId);
         CategoryDto categoryDto = getCategoryById(event.getCategoryId());
-        eventValidator.validateEventOwnership(event, userId);
+        eventValidator.validateEventOwnership(event, userId-1);
         return EventMapper.toFullDto(event, categoryDto, userDto);
     }
 
@@ -115,9 +120,10 @@ public class EventServiceImpl implements EventService {
     public EventFullDto updateUserEvent(Long userId,
                                         Long eventId,
                                         UpdateEventUserRequest updateDto) {
+        log.info("updateUserEvent - " + userId + ", - " + eventId + ", -" + updateDto);
         Event event = getEventById(eventId);
 
-        eventValidator.validateUserUpdate(event, userId, updateDto);
+        eventValidator.validateUserUpdate(event, userId-1, updateDto);
         applyUserUpdates(event, updateDto);
 
         Event updatedEvent = eventRepository.save(event);
@@ -130,8 +136,9 @@ public class EventServiceImpl implements EventService {
     @Transactional(readOnly = true)
     @Override
     public List<ParticipationRequestDto> getEventRequests(Long userId, Long eventId) {
+        log.info("getEventRequests - " + userId + ", - " + eventId);
         Event event = getEventById(eventId);
-        eventValidator.validateEventOwnership(event, userId);
+        eventValidator.validateEventOwnership(event, userId-1);
 
         return requestClient.getRequestsByEventId(eventId);
     }
@@ -139,6 +146,7 @@ public class EventServiceImpl implements EventService {
     public Map<String, List<ParticipationRequestDto>> approveRequests(Long userId,
                                                                       Long eventId,
                                                                       EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest) {
+        log.info("approveRequests - " + userId + ", - " + eventId + ", - " + eventRequestStatusUpdateRequest);
         Event event = getEventById(eventId);
         eventValidator.validateInitiator(event, userId);
 
@@ -155,6 +163,7 @@ public class EventServiceImpl implements EventService {
     @Transactional(readOnly = true)
     @Override
     public List<EventFullDto> searchEventsByAdmin(SearchAdminEventsParamDto searchParams) {
+        log.info("searchEventsByAdmin - " + searchParams);
 
         return eventRepository.findAll((root, query, cb) -> {
                     List<Predicate> predicates = new ArrayList<>();
@@ -192,6 +201,8 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto updateEventByAdmin(Long eventId,
                                            UpdateEventAdminRequest updateEventAdminRequest) {
+        log.info("updateEventByAdmin - " + eventId + ", - " + updateEventAdminRequest);
+
         Event oldEvent = getEventById(eventId);
         eventValidator.validateAdminPublishedEventDate(updateEventAdminRequest.getEventDate(), oldEvent);
         eventValidator.validateAdminEventDate(oldEvent);
@@ -205,6 +216,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private void handleStateUpdateEventAdminRequest(StateAction action, Event event) {
+        log.info("handleStateUpdateEventAdminRequest - " + action + ", - " + event);
         if (event.getState() != EventState.PENDING) {
             throw new ConflictException("Изменение статуса возможно только для событий в состоянии PENDING");
         }
@@ -225,6 +237,7 @@ public class EventServiceImpl implements EventService {
     @Transactional(readOnly = true)
     @Override
     public List<EventShortDto> searchPublicEvents(SearchPublicEventsParamDto searchParams) {
+        log.info("searchPublicEvents - " + searchParams);
 
         Specification<Event> specification = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -278,6 +291,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto getPublicEvent(Long eventId,
                                        HttpServletRequest request) {
+        log.info("getPublicEvent - " + eventId + ", - " + request);
         Event event = getEventById(eventId);
         if (!event.getState().equals(EventState.PUBLISHED)) {
             throw new NotFoundException("У события должен быть статус <PUBLISHED>");
@@ -288,6 +302,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private List<EventShortDto> paginateAndMap(List<Event> events, PageRequest pageRequest) {
+        log.info("paginateAndMap - " + events + ", - " + pageRequest);
         List<Event> paginatedEvents = events.stream()
                 .skip(pageRequest.getOffset())
                 .toList();
@@ -302,6 +317,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private UserDto getUserById(Long userId) {
+        log.info("getUserById - " + userId);
         try {
             return userClient.getUser(userId);
         } catch (FeignException.NotFound e) {
@@ -310,11 +326,13 @@ public class EventServiceImpl implements EventService {
     }
 
     private Event getEventById(Long eventId) {
+        log.info("getEventById - " + eventId);
         return eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Не найдено событие с ID: " + eventId));
     }
 
     private CategoryDto getCategoryById(Long categoryId) {
+        log.info("getCategoryById - " + categoryId);
         try {
             return categoryClient.getCategoryById(categoryId);
         } catch (FeignException.NotFound e) {
@@ -323,6 +341,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private Location resolveLocation(Location requestLocation) {
+        log.info("resolveLocation - " + requestLocation);
         Location mayBeExistingLocation = null;
         if (requestLocation.getId() == null) {
             mayBeExistingLocation = locationRepository
@@ -333,6 +352,8 @@ public class EventServiceImpl implements EventService {
     }
 
     private void applyAdminUpdates(Event event, UpdateEventAdminRequest update) {
+        log.info("applyAdminUpdates - " + event + ", - " + update);
+
         Optional.ofNullable(update.getAnnotation()).ifPresent(event::setAnnotation);
         Optional.ofNullable(update.getDescription()).ifPresent(event::setDescription);
         Optional.ofNullable(update.getEventDate()).ifPresent(event::setEventDate);
@@ -359,6 +380,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private void applyUserUpdates(Event event, UpdateEventUserRequest update) {
+        log.info("applyUserUpdates - " + event + ", - " + update);
 
         Optional.ofNullable(update.getAnnotation()).ifPresent(event::setAnnotation);
         Optional.ofNullable(update.getDescription()).ifPresent(event::setDescription);
@@ -380,6 +402,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private void updateState(StateAction stateAction, Event event) {
+        log.info("updateState - " + stateAction + ", - " + event);
         if (stateAction == null) return;
         switch (stateAction) {
             case SEND_TO_REVIEW -> event.setState(EventState.PENDING);
@@ -390,6 +413,7 @@ public class EventServiceImpl implements EventService {
     private Map<String, List<ParticipationRequestDto>> processStatusSpecificLogic(Event event,
                                                                                   List<ParticipationRequestDto> requests,
                                                                                   RequestStatus status) {
+        log.info("processStatusSpecificLogic - " + event + ", - " + requests + ", " + status);
         if (status == RequestStatus.REJECTED) {
             return processRejection(requests);
         } else {
@@ -398,12 +422,14 @@ public class EventServiceImpl implements EventService {
     }
 
     private List<ParticipationRequestDto> getAndValidateRequests(Long eventId, List<Long> requestIds) {
+        log.info("getAndValidateRequests - " + eventId + ", - " + requestIds);
         List<ParticipationRequestDto> requests = requestClient.getRequestsByIds(requestIds);
         eventValidator.validateRequestsBelongToEvent(requests, eventId);
         return requests;
     }
 
     private Map<String, List<ParticipationRequestDto>> processRejection(List<ParticipationRequestDto> requests) {
+        log.info("processRejection - " + requests);
         eventValidator.validateNoConfirmedRequests(requests);
         updateRequestStatuses(requests, RequestStatus.REJECTED);
         List<ParticipationRequestDto> rejectedRequests = requestClient.saveAll(requests)
@@ -414,6 +440,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private void updateRequestStatuses(List<ParticipationRequestDto> requests, RequestStatus status) {
+        log.info("updateRequestStatuses - " + requests + ", - " + status);
         RequestStatus requestStatus = requestStatusClient.getStatusByName(status.name());
 
         requests.forEach(request -> request.setStatus(requestStatus));
@@ -422,6 +449,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private Map<String, List<ParticipationRequestDto>> processConfirmation(Event event, List<ParticipationRequestDto> requests) {
+        log.info("processConfirmation - " + event + ", - " + requests);
         eventValidator.validateAllRequestsPending(requests);
 
         int availableSlots = event.getParticipantLimit() - event.getConfirmedRequests();
@@ -441,11 +469,13 @@ public class EventServiceImpl implements EventService {
     }
 
     private void updateEventConfirmedRequests(Event event, int newConfirmations) {
+        log.info("updateEventConfirmedRequests - " + event + ", - " + newConfirmations);
         event.setConfirmedRequests(event.getConfirmedRequests() + newConfirmations);
         eventRepository.save(event);
     }
 
     private List<ParticipationRequestDto> mapToParticipationRequestDtoList(List<ParticipationRequestDto> requests) {
+        log.info("mapToParticipationRequestDtoList - " + requests);
         return requests;
     }
 

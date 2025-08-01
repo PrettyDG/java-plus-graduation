@@ -9,8 +9,9 @@ import ru.practicum.event.EventFullDto;
 
 @FeignClient(name = "event-service")
 public interface EventClient {
-    @GetMapping("/events/{id}")
-    EventFullDto getEventById(@PathVariable("id") Long eventId);
+    @GetMapping("/users/{userId}/events/{eventId}")
+    EventFullDto getEventById(@PathVariable("userId") Long userId,
+                              @PathVariable("eventId") Long eventId);
 
     @PatchMapping("/events/{id}/confirmed")
     void updateConfirmedRequests(@PathVariable("id") Long eventId, @RequestParam int delta);
