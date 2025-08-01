@@ -24,6 +24,7 @@ public class Compilation {
     @Column(nullable = false)
     private String title;
 
+    @Builder.Default
     @Column(nullable = false)
     private boolean pinned = false;
 

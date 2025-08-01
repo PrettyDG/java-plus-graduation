@@ -7,7 +7,7 @@ CREATE INDEX IF NOT EXISTS idx_compilations_pinned ON compilations(pinned);
 
 CREATE TABLE IF NOT EXISTS compilation_events (
     compilation_id BIGINT NOT NULL REFERENCES compilations(id) ON DELETE CASCADE,
-    event_id BIGINT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+    event_id BIGINT NOT NULL,
     PRIMARY KEY (compilation_id, event_id)
 );
 CREATE INDEX IF NOT EXISTS idx_compilation_events_compilation_id ON compilation_events(compilation_id);
