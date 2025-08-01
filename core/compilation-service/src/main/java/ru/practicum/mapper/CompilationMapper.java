@@ -3,6 +3,7 @@ package ru.practicum.mapper;
 import lombok.experimental.UtilityClass;
 import ru.practicum.compilation.CompilationDto;
 import ru.practicum.compilation.NewCompilationDto;
+import ru.practicum.event.EventShortDto;
 import ru.practicum.model.Compilation;
 
 import java.util.List;
@@ -10,15 +11,12 @@ import java.util.List;
 @UtilityClass
 public class CompilationMapper {
 
-    public CompilationDto toDto(Compilation compilation) {
-        List<Long> eventIds = compilation.getEventsId();
-
-
+    public CompilationDto toDto(Compilation compilation, List<EventShortDto> eventShortDtoList) {
         return CompilationDto.builder()
                 .id(compilation.getId())
                 .title(compilation.getTitle())
                 .pinned(compilation.isPinned())
-                .events(eventIds)
+                .events(eventShortDtoList)
                 .build();
     }
 

@@ -1,5 +1,6 @@
 package ru.practicum.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import ru.practicum.event.EventState;
@@ -32,6 +33,7 @@ public class Event {
     @Column(name = "paid")
     private Boolean paid;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(name = "event_date")
     private LocalDateTime eventDate;
 
@@ -47,6 +49,7 @@ public class Event {
     @Enumerated(EnumType.STRING)
     private EventState state;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(name = "created_on")
     private LocalDateTime createdOn;
 
@@ -57,6 +60,7 @@ public class Event {
     @Column(name = "request_moderation")
     private Boolean requestModeration;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(name = "published_on")
     private LocalDateTime publishedOn;
 

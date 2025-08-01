@@ -8,6 +8,7 @@ import ru.practicum.client.EventClient;
 import ru.practicum.compilation.CompilationDto;
 import ru.practicum.compilation.NewCompilationDto;
 import ru.practicum.compilation.UpdateCompilationRequest;
+import ru.practicum.event.EventShortDto;
 import ru.practicum.exceptions.NotFoundException;
 import ru.practicum.mapper.CompilationMapper;
 import ru.practicum.model.Compilation;
@@ -35,7 +36,8 @@ public class CompilationServiceImpl implements CompilationService {
 
         Compilation compilation = CompilationMapper.toEntity(dto, events);
         Compilation saved = compilationRepository.save(compilation);
-        return CompilationMapper.toDto(saved);
+        List<EventShortDto> eventShortDtoList = eventClient.getEventsShortDto(saved.getEventsId());
+        return CompilationMapper.toDto(saved, eventShortDtoList);
     }
 
     @Override
@@ -57,7 +59,8 @@ public class CompilationServiceImpl implements CompilationService {
         }
 
         Compilation updated = compilationRepository.save(compilation);
-        return CompilationMapper.toDto(updated);
+        List<EventShortDto> eventShortDtoList = eventClient.getEventsShortDto(updated.getEventsId());
+        return CompilationMapper.toDto(updated, eventShortDtoList);
     }
 
     @Override
@@ -76,7 +79,11 @@ public class CompilationServiceImpl implements CompilationService {
 
         return all.stream()
                 .filter(c -> pinned == null || c.isPinned() == pinned)
-                .map(CompilationMapper::toDto)
+                .map(c -> {
+                    List<Long> eventIds = c.getEventsId();
+                    List<EventShortDto> eventShortDtoList = eventClient.getEventsShortDto(eventIds);
+                    return CompilationMapper.toDto(c, eventShortDtoList);
+                })
                 .collect(Collectors.toList());
     }
 
@@ -84,6 +91,7 @@ public class CompilationServiceImpl implements CompilationService {
     public CompilationDto getCompilationById(Long compId) {
         Compilation compilation = compilationRepository.findById(compId)
                 .orElseThrow(() -> new NotFoundException("Подборка с id=" + compId + " не найдена"));
-        return CompilationMapper.toDto(compilation);
+        List<EventShortDto> eventShortDtoList = eventClient.getEventsShortDto(compilation.getEventsId());
+        return CompilationMapper.toDto(compilation, eventShortDtoList);
     }
 }

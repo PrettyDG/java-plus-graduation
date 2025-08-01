@@ -15,7 +15,7 @@ public class UpdateEventUserRequest {
     Long category;
     @Size(min = 20, max = 7000)
     String description;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     LocalDateTime eventDate;
     LocationDto location;
     Boolean paid;
