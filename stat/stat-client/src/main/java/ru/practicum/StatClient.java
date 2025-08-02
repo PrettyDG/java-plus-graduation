@@ -83,6 +83,7 @@ public class StatClient {
     private URI makeUri(String path, Map<String, Object> queryParams) {
         ServiceInstance instance = retryTemplate.execute(context -> getInstance());
 
+
         UriComponentsBuilder builder = UriComponentsBuilder
                 .newInstance()
                 .scheme("http")

@@ -286,7 +286,7 @@ public class EventServiceImpl implements EventService {
 
             // Фильтр по категориям
             if (searchParams.getCategoriesIds() != null && !searchParams.getCategoriesIds().isEmpty()) {
-                predicates.add(root.get("category").get("id").in(searchParams.getCategoriesIds()));
+                predicates.add(root.get("categoryId").in(searchParams.getCategoriesIds()));
             }
 
             // Фильтр по paid

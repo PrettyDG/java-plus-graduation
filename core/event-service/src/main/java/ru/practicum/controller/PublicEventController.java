@@ -21,7 +21,6 @@ import ru.practicum.service.EventService;
 import ru.practicum.stat.dto.EndpointHitDto;
 import ru.practicum.stat.dto.ViewStatsDto;
 
-import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -193,7 +192,7 @@ public class PublicEventController {
 
     public List<String> buildUrisFromPathAndIds(String uriPath, List<Long> ids) {
         return ids.stream()
-                .map(id -> Path.of(uriPath, String.valueOf(id)).toString())
+                .map(id -> uriPath + "/" + id)
                 .collect(Collectors.toList());
     }
 }
