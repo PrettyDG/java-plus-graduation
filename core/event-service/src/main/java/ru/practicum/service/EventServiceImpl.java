@@ -75,12 +75,13 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventShortDto getEventShort(Long id) {
-        log.info("getEventShort - " + id);
         Event event = eventRepository.findById(id).get();
-        CategoryDto categoryDto = getCategoryById(event.getCategoryId());
-        UserDto userDto = getUserById(event.getInitiatorId());
-
-        return EventMapper.toShortDto(event, categoryDto, userDto);
+        log.info("Event - " + event + ", UserForEvent - " + event.getInitiatorId());
+        UserDto userDto = userClient.getUser(event.getInitiatorId());
+        CategoryDto categoryDto = categoryClient.getCategoryById(event.getCategoryId());
+        EventShortDto eventShortDto = EventMapper.toShortDto(event, categoryDto, userDto);
+        log.info("EventShortDto - " + eventShortDto);
+        return eventShortDto;
     }
 
     @Override

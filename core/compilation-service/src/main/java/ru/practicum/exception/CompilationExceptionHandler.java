@@ -19,31 +19,31 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
-public class CategoryExceptionHandler {
+public class CompilationExceptionHandler {
 
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<CategoryExceptionHandler.ErrorResponse> handleNotFoundException(NotFoundException e) {
+    public ResponseEntity<CompilationExceptionHandler.ErrorResponse> handleNotFoundException(NotFoundException e) {
         log.error("Объект не найден");
-        return new ResponseEntity<>(new CategoryExceptionHandler.ErrorResponse(e.getMessage()), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new CompilationExceptionHandler.ErrorResponse(e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<CategoryExceptionHandler.ErrorResponse> handleValidationException(ValidationException e) {
+    public ResponseEntity<CompilationExceptionHandler.ErrorResponse> handleValidationException(ValidationException e) {
         log.error("Ошибка с заполнением полей");
-        return new ResponseEntity<>(new CategoryExceptionHandler.ErrorResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new CompilationExceptionHandler.ErrorResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<CategoryExceptionHandler.ErrorResponse> handleException(ConflictException e) {
+    public ResponseEntity<CompilationExceptionHandler.ErrorResponse> handleException(ConflictException e) {
         log.error("Данное действие уже выполнено");
-        return new ResponseEntity<>(new CategoryExceptionHandler.ErrorResponse(e.getMessage()), HttpStatus.CONFLICT);
+        return new ResponseEntity<>(new CompilationExceptionHandler.ErrorResponse(e.getMessage()), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(DuplicateException.class)
-    public ResponseEntity<CategoryExceptionHandler.ErrorResponse> handleException(Exception e) {
+    public ResponseEntity<CompilationExceptionHandler.ErrorResponse> handleException(Exception e) {
         log.error("Данное действие уже выполнено");
-        return new ResponseEntity<>(new CategoryExceptionHandler.ErrorResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new CompilationExceptionHandler.ErrorResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
