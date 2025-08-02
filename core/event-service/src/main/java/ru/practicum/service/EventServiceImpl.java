@@ -101,7 +101,9 @@ public class EventServiceImpl implements EventService {
         Event savedEvent = eventRepository.save(event);
         log.info("Событие успешно добавлено под id {} со статусом {} и ожидается подтверждение",
                 userId, event.getState());
-        return EventMapper.toFullDto(savedEvent, category, userDto);
+        EventFullDto eventFullDto = EventMapper.toFullDto(savedEvent, category, userDto);
+        log.info("Возвращаем eventFullDto - " + eventFullDto);
+        return eventFullDto;
     }
 
     @Transactional(readOnly = true)
@@ -209,10 +211,12 @@ public class EventServiceImpl implements EventService {
         eventValidator.validateAdminEventUpdateState(oldEvent.getState());
         applyAdminUpdates(oldEvent, updateEventAdminRequest);
         Event event = eventRepository.save(oldEvent);
-        log.info("Событие успешно обновлено администратором");
+        log.info("Событие успешно обновлено администратором, - " + event);
         CategoryDto categoryDto = getCategoryById(event.getCategoryId());
         UserDto userDto = getUserById(event.getInitiatorId());
-        return EventMapper.toFullDto(event, categoryDto, userDto);
+        EventFullDto eventFullDto = EventMapper.toFullDto(event, categoryDto, userDto);
+        log.info("Возвращаем eventFullDto - " + eventFullDto);
+        return eventFullDto;
     }
 
     private void handleStateUpdateEventAdminRequest(StateAction action, Event event) {
@@ -298,7 +302,9 @@ public class EventServiceImpl implements EventService {
         }
         UserDto userDto = getUserById(event.getInitiatorId());
         CategoryDto categoryDto = getCategoryById(event.getCategoryId());
-        return EventMapper.toFullDto(event, categoryDto, userDto);
+        EventFullDto eventFullDto = EventMapper.toFullDto(event, categoryDto, userDto);
+        log.info("Возвращаем eventFullDto - " + eventFullDto);
+        return eventFullDto;
     }
 
     private List<EventShortDto> paginateAndMap(List<Event> events, PageRequest pageRequest) {
