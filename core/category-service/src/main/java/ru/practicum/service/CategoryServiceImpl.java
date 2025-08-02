@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.CategoryDto;
 import ru.practicum.category.CategoryUpdateDto;
+import ru.practicum.exceptions.ConflictException;
 import ru.practicum.exceptions.NotFoundException;
 import ru.practicum.mapper.CategoryMapper;
 import ru.practicum.model.Category;
@@ -32,6 +33,10 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto update(Long categoryId, CategoryUpdateDto dto) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new NotFoundException("Категория не найдена: " + categoryId));
+
+        if (categoryRepository.existsByNameIgnoreCaseAndIdNot(dto.getName(), categoryId)) {
+            throw new ConflictException("Категория с названием \"" + dto.getName() + "\" уже существует");
+        }
 
         category.setName(dto.getName());
 

@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface CategoryRepository extends JpaRepository<Category, Long> {
     List<Category> findByIdIn(List<Long> categoriesId, Pageable pageable);
+
+    boolean existsByNameIgnoreCaseAndIdNot(String name, Long id);
 }
