@@ -1,13 +1,17 @@
 package ru.practicum.event;
 
-import lombok.Builder;
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.*;
 import ru.practicum.category.CategoryDto;
 import ru.practicum.user.UserDto;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 @Builder
 public class EventFullDto {
     private String annotation;

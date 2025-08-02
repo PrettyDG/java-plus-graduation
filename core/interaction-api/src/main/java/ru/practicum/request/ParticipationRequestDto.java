@@ -4,6 +4,7 @@ package ru.practicum.request;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Data;
+import ru.practicum.user.UserDto;
 
 import java.time.LocalDateTime;
 
@@ -14,6 +15,6 @@ public class ParticipationRequestDto {
     LocalDateTime created;
     Long event;
     Long id;
-    Long requesterId;
+    UserDto requester;
     RequestStatus status;
 }

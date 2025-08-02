@@ -59,8 +59,11 @@ public class RequestValidator {
     }
 
     private void checkEventCapacity(EventFullDto event) {
-        if (event.getParticipantLimit() > 0 &&
-                event.getConfirmedRequests() >= event.getParticipantLimit()) {
+        Integer participantLimit = event.getParticipantLimit();
+        Integer confirmedRequests = event.getConfirmedRequests();
+
+        if (participantLimit != null && participantLimit > 0 &&
+                confirmedRequests != null && confirmedRequests >= participantLimit) {
             throw new ConflictException("Событие с ID: " + event.getId() + " нет свободных слотов");
         }
     }

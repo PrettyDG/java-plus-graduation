@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.client.EventClient;
 import ru.practicum.client.UserClient;
+import ru.practicum.clients.EventClient;
 import ru.practicum.event.EventFullDto;
 import ru.practicum.exceptions.NotFoundException;
 import ru.practicum.exceptions.ValidationException;
@@ -40,7 +40,10 @@ public class RequestServiceImpl implements RequestService {
     public List<ParticipationRequestDto> findByEventId(Long eventId) {
         log.debug("Запрос на получение заявок по событию с ID: {}", eventId);
         List<ParticipationRequestDto> result = requestRepository.findByEventId(eventId).stream()
-                .map(RequestMapper::toRequestDto)
+                .map(request -> {
+                    UserDto userDto = userClient.getUser(request.getRequesterId());
+                    return RequestMapper.toRequestDto(request, userDto);
+                })
                 .collect(Collectors.toList());
         log.info("Найдено {} заявок для события с ID: {}", result.size(), eventId);
         return result;
@@ -50,7 +53,10 @@ public class RequestServiceImpl implements RequestService {
     public List<ParticipationRequestDto> findByIds(List<Long> ids) {
         log.debug("Запрос на получение заявок по списку ID: {}", ids);
         List<ParticipationRequestDto> result = requestRepository.findAllById(ids).stream()
-                .map(RequestMapper::toRequestDto)
+                .map(request -> {
+                    UserDto userDto = userClient.getUser(request.getRequesterId());
+                    return RequestMapper.toRequestDto(request, userDto);
+                })
                 .collect(Collectors.toList());
         log.info("Найдено {} заявок по списку ID", result.size());
         return result;
@@ -68,7 +74,10 @@ public class RequestServiceImpl implements RequestService {
         List<Request> saved = requestRepository.saveAll(requests);
 
         List<ParticipationRequestDto> result = saved.stream()
-                .map(RequestMapper::toRequestDto)
+                .map(request -> {
+                    UserDto userDto = userClient.getUser(request.getRequesterId());
+                    return RequestMapper.toRequestDto(request, userDto);
+                })
                 .collect(Collectors.toList());
 
         log.info("Массовое сохранение заявок завершено, сохранено: {}", result.size());
@@ -80,7 +89,10 @@ public class RequestServiceImpl implements RequestService {
     public List<ParticipationRequestDto> getUserRequests(Long userId) {
         log.debug("Запрос на получение всех заявок участия пользователя с ID: {}", userId);
         List<ParticipationRequestDto> result = requestRepository.findByRequesterId(userId).stream()
-                .map(RequestMapper::toRequestDto)
+                .map(request -> {
+                    UserDto userDto = userClient.getUser(request.getRequesterId());
+                    return RequestMapper.toRequestDto(request, userDto);
+                })
                 .collect(Collectors.toList());
         log.info("Найдено {} заявок пользователя с ID: {}", result.size(), userId);
         return result;
@@ -88,10 +100,11 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public ParticipationRequestDto createParticipationRequest(Long userId, Long eventId) {
-        log.debug("Создание заявки на участие пользователя с ID: {} для события с ID: {}", userId, eventId);
+        log.info("Создание заявки на участие пользователя с ID: {} для события с ID: {}", userId, eventId);
         final UserDto user = getUserById(userId);
+        log.info("user - " + user);
         final EventFullDto event = getEventById(userId, eventId);
-
+        log.info("event - " + event);
         requestValidator.validateRequestCreation(user, event);
 
         final Request request = buildNewRequest(user, event);
@@ -101,7 +114,7 @@ public class RequestServiceImpl implements RequestService {
         updateEventStatistics(event, request.getStatus().getName());
 
         log.info("Заявка на участие создана с ID: {} и статусом: {}", savedRequest.getId(), savedRequest.getStatus());
-        return RequestMapper.toRequestDto(savedRequest);
+        return RequestMapper.toRequestDto(savedRequest, user);
     }
 
     @Override
@@ -118,7 +131,7 @@ public class RequestServiceImpl implements RequestService {
         }
 
         log.info("Заявка на участие с ID: {} отменена пользователем с ID: {}", requestId, userId);
-        return RequestMapper.toRequestDto(request);
+        return RequestMapper.toRequestDto(request, user);
     }
 
     private UserDto getUserById(Long userId) {
@@ -134,9 +147,9 @@ public class RequestServiceImpl implements RequestService {
     }
 
     private EventFullDto getEventById(Long userId, Long eventId) {
-        log.debug("Получение события по ID: {}", eventId);
+        log.info("Получение события по ID: {}", eventId);
         try {
-            EventFullDto event = eventClient.getEventById(userId, eventId);
+            EventFullDto event = eventClient.getEventById(eventId);
             log.info("Событие найдено с ID: {}", eventId);
             return event;
         } catch (FeignException.NotFound e) {
@@ -215,7 +228,6 @@ public class RequestServiceImpl implements RequestService {
         }
     }
 
-    //TODO
     private void adjustEventConfirmedRequests(Long eventId, int delta) {
         log.debug("Изменение количества подтвержденных заявок события с ID: {} на {}", eventId, delta);
         eventClient.updateConfirmedRequests(eventId, delta);

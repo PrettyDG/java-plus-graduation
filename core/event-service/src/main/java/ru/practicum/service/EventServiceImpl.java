@@ -54,6 +54,26 @@ public class EventServiceImpl implements EventService {
     private final RequestStatusClient requestStatusClient;
 
     @Override
+    public EventFullDto getEventDtoById(Long eventId) {
+        Event event = eventRepository.findById(eventId).get();
+        log.info("Event - " + event + ", UserForEvent - " + event.getInitiatorId());
+        UserDto userDto = userClient.getUser(event.getInitiatorId());
+        CategoryDto categoryDto = categoryClient.getCategoryById(event.getCategoryId());
+        EventFullDto eventFullDto = EventMapper.toFullDto(event, categoryDto, userDto);
+        log.info("EventFullDto - " + eventFullDto);
+        return eventFullDto;
+    }
+
+    @Override
+    public void updateConfirmedRequests(Long eventId, int delta) {
+        Event event = eventRepository.findById(eventId).get();
+        log.info("Event - " + event);
+        event.setConfirmedRequests(event.getConfirmedRequests() + delta);
+        eventRepository.save(event);
+        log.info("Сохранён event после updateConfirmedRequests - " + event);
+    }
+
+    @Override
     public EventShortDto getEventShort(Long id) {
         log.info("getEventShort - " + id);
         Event event = eventRepository.findById(id).get();
@@ -118,7 +138,9 @@ public class EventServiceImpl implements EventService {
         CategoryDto categoryDto = getCategoryById(event.getCategoryId());
         log.info("categoryDto - " + categoryDto);
         eventValidator.validateEventOwnership(event, userId);
-        return EventMapper.toFullDto(event, categoryDto, userDto);
+        EventFullDto fullDto = EventMapper.toFullDto(event, categoryDto, userDto);
+        log.info("EventFullDto - " + fullDto);
+        return fullDto;
     }
 
     @Override

@@ -44,6 +44,18 @@ public class PublicEventController {
     private final StatClient statClient;
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
+    @GetMapping("/events/{eventId}")
+    EventFullDto getEventById (@PathVariable("eventId") Long eventId) {
+        log.info("getEventDtoById - " + eventId);
+        return eventService.getEventDtoById(eventId);
+    }
+
+    @PostMapping("/{id}/confirmed")
+    public void updateConfirmedRequests(@PathVariable("id") Long eventId, @RequestParam int delta) {
+        log.info("updateConfirmedRequests - " + eventId);
+        eventService.updateConfirmedRequests(eventId, delta);
+    }
+
     @GetMapping("/{id}/short")
     public ResponseEntity<EventShortDto> getEventShort(@PathVariable Long id) {
         EventShortDto dto = eventService.getEventShort(id);

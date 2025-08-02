@@ -4,13 +4,14 @@ package ru.practicum.mapper;
 import ru.practicum.model.Request;
 import ru.practicum.model.RequestStatusEntity;
 import ru.practicum.request.ParticipationRequestDto;
+import ru.practicum.user.UserDto;
 
 public class RequestMapper {
 
-    public static ParticipationRequestDto toRequestDto(Request request) {
+    public static ParticipationRequestDto toRequestDto(Request request, UserDto requester) {
         return ParticipationRequestDto.builder()
                 .id(request.getId())
-                .requesterId(request.getRequesterId())
+                .requester(requester)
                 .event(request.getEventId())
                 .status(request.getStatus().getName())
                 .created(request.getCreated())
@@ -25,7 +26,7 @@ public class RequestMapper {
         Request request = new Request();
 
         request.setId(dto.getId());
-        request.setRequesterId(dto.getRequesterId());
+        request.setRequesterId(dto.getRequester().getId());
         request.setEventId(dto.getEvent());
         request.setCreated(dto.getCreated());
 

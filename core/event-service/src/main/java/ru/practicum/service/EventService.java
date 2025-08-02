@@ -11,6 +11,10 @@ import java.util.Map;
 
 public interface EventService {
 
+    EventFullDto getEventDtoById(Long id);
+
+    void updateConfirmedRequests(Long eventId, int delta);
+
     EventShortDto getEventShort(Long id);
 
     List<EventShortDto> getEventsShortDto(List<Long> ids);
