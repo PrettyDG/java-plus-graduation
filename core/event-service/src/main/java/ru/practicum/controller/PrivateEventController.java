@@ -61,7 +61,7 @@ public class PrivateEventController {
             @PathVariable @Positive Long userId,
             @PathVariable @Positive Long eventId) {
         log.info("Запрос на получение события с id = {} для пользователя с ID {}", eventId, userId);
-        return ResponseEntity.ok(eventService.getUserEventById(userId, eventId));
+        return ResponseEntity.ok(eventService.getUserEventById((userId - 1), eventId));
     }
 
     @PatchMapping("/{eventId}")

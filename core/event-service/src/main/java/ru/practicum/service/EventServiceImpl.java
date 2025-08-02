@@ -102,7 +102,7 @@ public class EventServiceImpl implements EventService {
         log.info("Событие успешно добавлено под id {} со статусом {} и ожидается подтверждение",
                 userId, event.getState());
         EventFullDto eventFullDto = EventMapper.toFullDto(savedEvent, category, userDto);
-        log.info("Возвращаем eventFullDto - " + eventFullDto);
+        log.info("Возвращаем eventFullDto - " + eventFullDto + "userId - " + eventFullDto.getInitiator().getId());
         return eventFullDto;
     }
 
@@ -110,10 +110,13 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto getUserEventById(Long userId,
                                          Long eventId) {
-        log.info("getUserEventById - " + userId + ", - " + eventId);
+        log.info("getUserEventById, userId - " + userId + ", eventId - " + eventId);
         Event event = getEventById(eventId);
+        log.info("event - " + event);
         UserDto userDto = getUserById(userId);
+        log.info("userdto - " + userDto);
         CategoryDto categoryDto = getCategoryById(event.getCategoryId());
+        log.info("categoryDto - " + categoryDto);
         eventValidator.validateEventOwnership(event, userId);
         return EventMapper.toFullDto(event, categoryDto, userDto);
     }
@@ -215,7 +218,7 @@ public class EventServiceImpl implements EventService {
         CategoryDto categoryDto = getCategoryById(event.getCategoryId());
         UserDto userDto = getUserById(event.getInitiatorId());
         EventFullDto eventFullDto = EventMapper.toFullDto(event, categoryDto, userDto);
-        log.info("Возвращаем eventFullDto - " + eventFullDto);
+        log.info("Возвращаем eventFullDto - " + eventFullDto + "userId - " + eventFullDto.getInitiator().getId());
         return eventFullDto;
     }
 
@@ -295,7 +298,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto getPublicEvent(Long eventId,
                                        HttpServletRequest request) {
-        log.info("getPublicEvent - " + eventId + ", - " + request);
+        log.info("getPublicEvent. eventId - " + eventId + ",request - " + request);
         Event event = getEventById(eventId);
         if (!event.getState().equals(EventState.PUBLISHED)) {
             throw new NotFoundException("У события должен быть статус <PUBLISHED>");
@@ -303,7 +306,7 @@ public class EventServiceImpl implements EventService {
         UserDto userDto = getUserById(event.getInitiatorId());
         CategoryDto categoryDto = getCategoryById(event.getCategoryId());
         EventFullDto eventFullDto = EventMapper.toFullDto(event, categoryDto, userDto);
-        log.info("Возвращаем eventFullDto - " + eventFullDto);
+        log.info("Возвращаем eventFullDto - " + eventFullDto + "userId - " + eventFullDto.getInitiator().getId());
         return eventFullDto;
     }
 
@@ -332,7 +335,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private Event getEventById(Long eventId) {
-        log.info("getEventById - " + eventId);
+        log.info("getEventById, eventId - " + eventId);
         return eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Не найдено событие с ID: " + eventId));
     }

@@ -59,14 +59,14 @@ public class PublicEventController {
     @GetMapping
     public ResponseEntity<List<EventShortDto>> searchPublicEvents(
             @RequestParam(defaultValue = DEFAULT_TEXT) String text,
-            @RequestParam(required = false) List<Long> categoriesIds,
+            @RequestParam(name = "categories", required = false) List<Long> categoriesIds,
             @RequestParam(required = false) Boolean paid,
             @RequestParam(required = false)
             @DateTimeFormat(pattern = DATE_TIME_PATTERN) LocalDateTime rangeStart,
             @RequestParam(required = false)
             @DateTimeFormat(pattern = DATE_TIME_PATTERN) LocalDateTime rangeEnd,
             @RequestParam(defaultValue = "false") boolean onlyAvailable,
-            @RequestParam(required = false) EventSort eventSort,
+            @RequestParam(name = "sort", required = false) EventSort eventSort,
             @RequestParam(defaultValue = "" + DEFAULT_PAGE_START) @PositiveOrZero int from,
             @RequestParam(defaultValue = "" + DEFAULT_PAGE_SIZE) @Positive int size,
             HttpServletRequest request) {
