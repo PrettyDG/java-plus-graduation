@@ -45,7 +45,7 @@ public class PublicEventController {
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
     @GetMapping("/events/{eventId}")
-    EventFullDto getEventById (@PathVariable("eventId") Long eventId) {
+    EventFullDto getEventById(@PathVariable("eventId") Long eventId) {
         log.info("getEventDtoById - " + eventId);
         return eventService.getEventDtoById(eventId);
     }

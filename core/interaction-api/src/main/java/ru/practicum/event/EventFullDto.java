@@ -1,6 +1,5 @@
 package ru.practicum.event;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import ru.practicum.category.CategoryDto;
 import ru.practicum.user.UserDto;
