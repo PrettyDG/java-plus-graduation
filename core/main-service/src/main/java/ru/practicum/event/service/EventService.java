@@ -34,7 +34,7 @@ public interface EventService {
     List<EventFullDto> searchEventsByAdmin(SearchAdminEventsParamDto searchAdminEventsParamDto);
 
     EventFullDto updateEventByAdmin(Long eventId,
-                                     UpdateEventAdminRequest updateEventAdminRequest);
+                                    UpdateEventAdminRequest updateEventAdminRequest);
 
     List<EventShortDto> searchPublicEvents(SearchPublicEventsParamDto searchPublicEventsParamDto);
 

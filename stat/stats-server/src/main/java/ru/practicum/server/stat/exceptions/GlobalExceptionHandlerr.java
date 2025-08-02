@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @Slf4j
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandlerr {
 
 
     @ExceptionHandler(NotFoundException.class)
@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
     }
 
     @Getter
-   private static class ErrorResponse {
+    private static class ErrorResponse {
         private final String error;
 
         public ErrorResponse(String error) {
