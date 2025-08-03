@@ -12,6 +12,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Builder
 public class User {
 
@@ -23,7 +24,7 @@ public class User {
     @Column(nullable = false)
     private String name;
 
-    @Email(message = "Invalid email")
+    @Email(message = "Email should be valid")
     @NotBlank(message = "Email must not be blank")
     @Column(nullable = false, unique = true)
     private String email;
