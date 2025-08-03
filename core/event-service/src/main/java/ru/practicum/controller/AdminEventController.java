@@ -11,9 +11,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.event.*;
+import ru.practicum.event.EventFullDto;
+import ru.practicum.event.EventState;
+import ru.practicum.event.SearchAdminEventsParamDto;
+import ru.practicum.event.UpdateEventAdminRequest;
 import ru.practicum.exceptions.ValidationException;
-import ru.practicum.mapper.EventMapper;
 import ru.practicum.service.EventService;
 
 import java.time.LocalDateTime;
@@ -31,7 +33,7 @@ public class AdminEventController {
     private final EventService eventService;
 
     @GetMapping
-    public List<EventShownDto> searchEventsByAdmin(
+    public List<EventFullDto> searchEventsByAdmin(
             @RequestParam(required = false) List<Long> users,
             @RequestParam(required = false) List<String> stateStrings,
             @RequestParam(required = false) List<Long> categoriesIds,
@@ -61,21 +63,18 @@ public class AdminEventController {
                         .pageRequest(pageRequest)
                         .build();
         List<EventFullDto> eventFullDtos = eventService.searchEventsByAdmin(searchAdminEventsParamDto);
-        List<EventShownDto> eventShownDtos = eventFullDtos.stream()
-                .map(EventMapper::toShownDto)
-                .collect(Collectors.toList());
-        return eventShownDtos;
+        return eventFullDtos;
     }
 
     @PatchMapping("/{eventId}")
-    public EventShownDto updateEventByAdmin(
+    public EventFullDto updateEventByAdmin(
             @PathVariable @Positive Long eventId,
             @RequestBody @Valid UpdateEventAdminRequest updateEventAdminRequest) {
         log.info("Редактирование данных события и его статуса (отклонение/публикация) id = {} и изменения: {}",
                 eventId, updateEventAdminRequest);
         EventFullDto fullDto = eventService.updateEventByAdmin(eventId, updateEventAdminRequest);
-        EventShownDto eventShownDto = EventMapper.toShownDto(fullDto);
-        return eventShownDto;
+
+        return fullDto;
     }
 
     private void validateTimeRange(LocalDateTime start, LocalDateTime end) {

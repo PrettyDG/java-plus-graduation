@@ -14,10 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.StatClient;
 import ru.practicum.event.EventFullDto;
 import ru.practicum.event.EventShortDto;
-import ru.practicum.event.EventShownDto;
 import ru.practicum.event.SearchPublicEventsParamDto;
 import ru.practicum.exceptions.ValidationException;
-import ru.practicum.mapper.EventMapper;
 import ru.practicum.model.EventSort;
 import ru.practicum.service.EventService;
 import ru.practicum.stat.dto.EndpointHitDto;
@@ -131,7 +129,7 @@ public class PublicEventController {
     }
 
     @GetMapping("/{eventId}")
-    public EventShownDto getEvent(
+    public EventFullDto getEvent(
             @PathVariable @Positive Long eventId,
             HttpServletRequest request) {
         log.info("Запрос на получение опубликованого события с id {}", eventId);
@@ -151,8 +149,7 @@ public class PublicEventController {
         log.info("Обновляем статистику");
         if (eventFullDto.getId() != null) saveStat(request);
 
-        EventShownDto eventShownDto = EventMapper.toShownDto(eventFullDto);
-        return eventShownDto;
+        return eventFullDto;
     }
 
     private PageRequest createPageRequest(int from, int size, EventSort sort) {
