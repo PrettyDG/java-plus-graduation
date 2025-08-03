@@ -20,9 +20,11 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto) {
+    public UserDto createUser(@Valid @RequestBody UserDto userDto) {
         log.info("createUser у UserController - " + userDto);
-        return new ResponseEntity<>(userService.create(userDto), HttpStatus.CREATED);
+        UserDto userDto1 = userService.create(userDto);
+        log.info("created userDto1 - " + userDto1);
+        return userDto1;
     }
 
     @GetMapping("/exists/{id}")

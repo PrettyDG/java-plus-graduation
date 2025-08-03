@@ -166,8 +166,9 @@ public class EventServiceImpl implements EventService {
         log.info("getEventRequests - " + userId + ", - " + eventId);
         Event event = getEventById(eventId);
         eventValidator.validateEventOwnership(event, userId);
-
-        return requestClient.getRequestsByEventId(eventId);
+        List<ParticipationRequestDto> participationRequestDtos = requestClient.getRequestsByEventId(eventId);
+        log.info("participitionRequestDto - " + participationRequestDtos);
+        return participationRequestDtos;
     }
 
     public Map<String, List<ParticipationRequestDto>> approveRequests(Long userId,
@@ -241,6 +242,7 @@ public class EventServiceImpl implements EventService {
         UserDto userDto = getUserById(event.getInitiatorId());
         EventFullDto eventFullDto = EventMapper.toFullDto(event, categoryDto, userDto);
         log.info("Возвращаем eventFullDto - " + eventFullDto + "userId - " + eventFullDto.getInitiator().getId());
+
         return eventFullDto;
     }
 

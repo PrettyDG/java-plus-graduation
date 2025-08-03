@@ -12,11 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.event.EventFullDto;
-import ru.practicum.event.EventState;
-import ru.practicum.event.SearchAdminEventsParamDto;
-import ru.practicum.event.UpdateEventAdminRequest;
+import ru.practicum.event.*;
 import ru.practicum.exceptions.ValidationException;
+import ru.practicum.mapper.EventMapper;
 import ru.practicum.service.EventService;
 
 import java.time.LocalDateTime;
@@ -68,15 +66,14 @@ public class AdminEventController {
     }
 
     @PatchMapping("/{eventId}")
-    public ResponseEntity<EventFullDto> updateEventByAdmin(
+    public EventShownDto updateEventByAdmin(
             @PathVariable @Positive Long eventId,
             @RequestBody @Valid UpdateEventAdminRequest updateEventAdminRequest) {
         log.info("Редактирование данных события и его статуса (отклонение/публикация) id = {} и изменения: {}",
                 eventId, updateEventAdminRequest);
-
-        return ResponseEntity.ok(
-                eventService.updateEventByAdmin(eventId, updateEventAdminRequest)
-        );
+        EventFullDto fullDto = eventService.updateEventByAdmin(eventId, updateEventAdminRequest);
+        EventShownDto eventShownDto = EventMapper.toShownDto(fullDto);
+        return eventShownDto;
     }
 
     private void validateTimeRange(LocalDateTime start, LocalDateTime end) {

@@ -2,10 +2,7 @@ package ru.practicum.mapper;
 
 
 import ru.practicum.category.CategoryDto;
-import ru.practicum.event.EventFullDto;
-import ru.practicum.event.EventShortDto;
-import ru.practicum.event.EventState;
-import ru.practicum.event.NewEventDto;
+import ru.practicum.event.*;
 import ru.practicum.model.Event;
 import ru.practicum.user.UserDto;
 
@@ -66,6 +63,27 @@ public class EventMapper {
                 .state(event.getState())
                 .title(event.getTitle())
                 .views(0L)
+                .build();
+    }
+
+    public static EventShownDto toShownDto(EventFullDto eventFullDto) {
+        return EventShownDto.builder()
+                .annotation(eventFullDto.getAnnotation())
+                .category(eventFullDto.getCategory())
+                .confirmedRequests(eventFullDto.getConfirmedRequests())
+                .createdOn(eventFullDto.getCreatedOn())
+                .description(eventFullDto.getDescription())
+                .eventDate(eventFullDto.getEventDate())
+                .id(eventFullDto.getId())
+                .initiator(eventFullDto.getInitiator())
+                .location(eventFullDto.getLocation())
+                .paid(eventFullDto.getPaid())
+                .participantLimit(eventFullDto.getParticipantLimit())
+                .publishedOn(eventFullDto.getPublishedOn())
+                .requestModeration(eventFullDto.getRequestModeration())
+                .state(eventFullDto.getState())
+                .title(eventFullDto.getTitle())
+                .views(eventFullDto.getViews())
                 .build();
     }
 }
