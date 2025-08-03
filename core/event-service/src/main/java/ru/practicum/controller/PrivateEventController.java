@@ -61,7 +61,7 @@ public class PrivateEventController {
             @PathVariable @Positive Long userId,
             @PathVariable @Positive Long eventId) {
         log.info("Запрос на получение события с id = {} для пользователя с ID {}", eventId, userId);
-        return ResponseEntity.ok(eventService.getUserEventById((userId - 1), eventId));
+        return ResponseEntity.ok(eventService.getUserEventById((userId), eventId));
     }
 
     @PatchMapping("/{eventId}")
@@ -74,11 +74,11 @@ public class PrivateEventController {
     }
 
     @GetMapping("/{eventId}/requests")
-    public ResponseEntity<List<ParticipationRequestDto>> getEventRequests(
+    public List<ParticipationRequestDto> getEventRequests(
             @PathVariable @Positive Long userId,
             @PathVariable @Positive Long eventId) {
         log.info("Запрос на получение всех заявок на событие с id = {} для пользователя с ID {}", eventId, userId);
-        return ResponseEntity.ok(eventService.getEventRequests(userId, eventId));
+        return eventService.getEventRequests(userId, eventId);
     }
 
     @PatchMapping("/{eventId}/requests")

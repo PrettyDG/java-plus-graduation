@@ -10,10 +10,10 @@ import ru.practicum.user.UserDto;
 @UtilityClass
 public class RequestMapper {
 
-    public static ParticipationRequestDto toRequestDto(Request request, UserDto requester) {
+    public static ParticipationRequestDto toRequestDto(Request request) {
         return ParticipationRequestDto.builder()
                 .id(request.getId())
-                .requester(requester)
+                .requester(request.getRequesterId())
                 .event(request.getEventId())
                 .status(request.getStatus().getName())
                 .created(request.getCreated())
@@ -28,7 +28,7 @@ public class RequestMapper {
         Request request = new Request();
 
         request.setId(dto.getId());
-        request.setRequesterId(dto.getRequester().getId());
+        request.setRequesterId(dto.getRequester());
         request.setEventId(dto.getEvent());
         request.setCreated(dto.getCreated());
         request.setStatus(requestStatusEntity);

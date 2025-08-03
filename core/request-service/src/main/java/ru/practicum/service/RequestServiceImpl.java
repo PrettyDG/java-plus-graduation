@@ -41,11 +41,10 @@ public class RequestServiceImpl implements RequestService {
     @Transactional(readOnly = true)
     public List<ParticipationRequestDto> findByEventId(Long eventId) {
         log.debug("Запрос на получение заявок по событию с ID: {}", eventId);
-        List<ParticipationRequestDto> result = requestRepository.findByEventId(eventId).stream()
-                .map(request -> {
-                    UserDto userDto = userClient.getUser(request.getRequesterId());
-                    return RequestMapper.toRequestDto(request, userDto);
-                })
+        List<Request> requests = requestRepository.findByEventId(eventId);
+
+        List<ParticipationRequestDto> result = requests.stream()
+                .map(RequestMapper::toRequestDto)
                 .collect(Collectors.toList());
         log.info("Найдено {} заявок для события с ID: {}", result.size(), eventId);
         return result;
@@ -55,11 +54,10 @@ public class RequestServiceImpl implements RequestService {
     @Transactional(readOnly = true)
     public List<ParticipationRequestDto> findByIds(List<Long> ids) {
         log.debug("Запрос на получение заявок по списку ID: {}", ids);
-        List<ParticipationRequestDto> result = requestRepository.findAllById(ids).stream()
-                .map(request -> {
-                    UserDto userDto = userClient.getUser(request.getRequesterId());
-                    return RequestMapper.toRequestDto(request, userDto);
-                })
+        List<Request> requests = requestRepository.findAllById(ids);
+
+        List<ParticipationRequestDto> result = requests.stream()
+                .map(RequestMapper::toRequestDto)
                 .collect(Collectors.toList());
         log.info("Найдено {} заявок по списку ID, {}", result.size(), result);
         return result;
@@ -82,10 +80,7 @@ public class RequestServiceImpl implements RequestService {
         log.info("requests - " + requests);
 
         List<ParticipationRequestDto> result = requests.stream()
-                .map(request -> {
-                    UserDto userDto = userClient.getUser(request.getRequesterId());
-                    return RequestMapper.toRequestDto(request, userDto);
-                })
+                .map(RequestMapper::toRequestDto)
                 .collect(Collectors.toList());
         log.info("result - " + result);
 
@@ -97,11 +92,9 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public List<ParticipationRequestDto> getUserRequests(Long userId) {
         log.debug("Запрос на получение всех заявок участия пользователя с ID: {}", userId);
+        UserDto userDto = getUserById(userId);
         List<ParticipationRequestDto> result = requestRepository.findByRequesterId(userId).stream()
-                .map(request -> {
-                    UserDto userDto = userClient.getUser(request.getRequesterId());
-                    return RequestMapper.toRequestDto(request, userDto);
-                })
+                .map(RequestMapper::toRequestDto)
                 .collect(Collectors.toList());
         log.info("Найдено {} заявок пользователя с ID: {}", result.size(), userId);
         return result;
@@ -123,7 +116,7 @@ public class RequestServiceImpl implements RequestService {
         updateEventStatistics(event, request.getStatus().getName());
 
         log.info("Заявка на участие создана с ID: {} и статусом: {}", savedRequest.getId(), savedRequest.getStatus());
-        return RequestMapper.toRequestDto(savedRequest, user);
+        return RequestMapper.toRequestDto(savedRequest);
     }
 
     @Override
@@ -140,7 +133,7 @@ public class RequestServiceImpl implements RequestService {
         }
 
         log.info("Заявка на участие с ID: {} отменена пользователем с ID: {}", requestId, userId);
-        return RequestMapper.toRequestDto(request, user);
+        return RequestMapper.toRequestDto(request);
     }
 
     @Transactional(readOnly = true)
@@ -271,4 +264,6 @@ public class RequestServiceImpl implements RequestService {
         request.setStatus(getRequestStatusEntityByRequestStatus(newStatus));
         log.info("Статус заявки с ID: {} обновлен на {}", request.getId(), newStatus);
     }
+
+
 }
