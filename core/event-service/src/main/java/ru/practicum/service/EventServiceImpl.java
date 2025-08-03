@@ -57,6 +57,7 @@ public class EventServiceImpl implements EventService {
         log.info("isExist - " + isExist);
         return isExist;
     }
+
     @Override
     public EventFullDto getEventDtoById(Long eventId) {
         Event event = eventRepository.findById(eventId).get();

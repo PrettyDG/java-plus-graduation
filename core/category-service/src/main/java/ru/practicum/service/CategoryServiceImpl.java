@@ -10,7 +10,6 @@ import ru.practicum.category.CategoryUpdateDto;
 import ru.practicum.clients.EventClient;
 import ru.practicum.exceptions.ConflictException;
 import ru.practicum.exceptions.NotFoundException;
-import ru.practicum.exceptions.ValidationException;
 import ru.practicum.mapper.CategoryMapper;
 import ru.practicum.model.Category;
 import ru.practicum.repository.CategoryRepository;
