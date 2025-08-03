@@ -3,6 +3,7 @@ package ru.practicum.client;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.request.ParticipationRequestDto;
+import ru.practicum.request.RequestStatus;
 
 import java.util.List;
 
@@ -17,4 +18,7 @@ public interface RequestClient {
 
     @PostMapping("/requests/save-all")
     List<ParticipationRequestDto> saveAll(@RequestBody List<ParticipationRequestDto> requests);
+
+    @GetMapping("/requests/statuses/{name}")
+    RequestStatus getStatusByName(@PathVariable("name") String name);
 }

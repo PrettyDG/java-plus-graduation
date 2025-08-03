@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.request.ParticipationRequestDto;
+import ru.practicum.request.RequestStatus;
 import ru.practicum.service.RequestService;
 
 import java.util.List;
@@ -34,5 +35,10 @@ public class RequestReceiveController {
     public ResponseEntity<List<ParticipationRequestDto>> saveAll(@RequestBody List<ParticipationRequestDto> requests) {
         List<ParticipationRequestDto> saved = requestService.saveAll(requests);
         return ResponseEntity.ok(saved);
+    }
+
+    @GetMapping("/statuses/{name}")
+    public RequestStatus getStatusByName(@PathVariable("name") String name) {
+        return requestService.getStatusByName(name);
     }
 }

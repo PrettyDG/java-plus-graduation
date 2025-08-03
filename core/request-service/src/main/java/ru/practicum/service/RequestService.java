@@ -2,6 +2,7 @@ package ru.practicum.service;
 
 
 import ru.practicum.request.ParticipationRequestDto;
+import ru.practicum.request.RequestStatus;
 
 import java.util.List;
 
@@ -20,4 +21,6 @@ public interface RequestService {
 
     ParticipationRequestDto cancelParticipationRequest(Long userId,
                                                        Long requestId);
+
+    RequestStatus getStatusByName(String name);
 }

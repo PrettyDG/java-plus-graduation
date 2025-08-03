@@ -8,6 +8,7 @@ import ru.practicum.validation.NotOnlySpaces;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Builder
 public class CategoryDto {
     private Long id;

@@ -15,7 +15,6 @@ import org.springframework.util.StringUtils;
 import ru.practicum.category.CategoryDto;
 import ru.practicum.client.CategoryClient;
 import ru.practicum.client.RequestClient;
-import ru.practicum.client.RequestStatusClient;
 import ru.practicum.client.UserClient;
 import ru.practicum.event.*;
 import ru.practicum.exceptions.ConflictException;
@@ -51,7 +50,6 @@ public class EventServiceImpl implements EventService {
     private final UserClient userClient;
     private final CategoryClient categoryClient;
     private final RequestClient requestClient;
-    private final RequestStatusClient requestStatusClient;
 
     @Override
     public EventFullDto getEventDtoById(Long eventId) {
@@ -473,7 +471,7 @@ public class EventServiceImpl implements EventService {
 
     private void updateRequestStatuses(List<ParticipationRequestDto> requests, RequestStatus status) {
         log.info("updateRequestStatuses - " + requests + ", - " + status);
-        RequestStatus requestStatus = requestStatusClient.getStatusByName(status.name());
+        RequestStatus requestStatus = requestClient.getStatusByName(status.name());
 
         requests.forEach(request -> request.setStatus(requestStatus));
 

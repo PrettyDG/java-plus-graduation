@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.client.UserClient;
 import ru.practicum.clients.EventClient;
 import ru.practicum.event.EventFullDto;
+import ru.practicum.exceptions.ConflictException;
 import ru.practicum.exceptions.NotFoundException;
 import ru.practicum.exceptions.ValidationException;
 import ru.practicum.mapper.RequestMapper;
@@ -58,7 +59,7 @@ public class RequestServiceImpl implements RequestService {
                     return RequestMapper.toRequestDto(request, userDto);
                 })
                 .collect(Collectors.toList());
-        log.info("Найдено {} заявок по списку ID", result.size());
+        log.info("Найдено {} заявок по списку ID, {}", result.size(), result);
         return result;
     }
 
@@ -134,6 +135,17 @@ public class RequestServiceImpl implements RequestService {
         return RequestMapper.toRequestDto(request, user);
     }
 
+    @Override
+    public RequestStatus getStatusByName(String name) {
+        RequestStatusEntity requestStatusEntity = requestStatusRepository.findByName(RequestStatus.valueOf(name))
+                .orElseThrow(() -> {
+                    log.error("Статус не найден: {}", name);
+                    return new NotFoundException("Не найден статус: " + name);
+                });
+
+        return requestStatusEntity.getName();
+    }
+
     private UserDto getUserById(Long userId) {
         log.debug("Получение пользователя по ID: {}", userId);
         try {
@@ -154,17 +166,19 @@ public class RequestServiceImpl implements RequestService {
             return event;
         } catch (FeignException.NotFound e) {
             log.error("Событие с ID: {} не найдено", eventId);
-            throw new NotFoundException("Не найдено событие с ID: " + eventId);
+            throw new ConflictException("Не найдено событие с ID: " + eventId);
         }
     }
 
     private Request getRequestById(Long requestId) {
         log.debug("Получение заявки по ID: {}", requestId);
-        return requestRepository.findById(requestId)
+        Request request = requestRepository.findById(requestId)
                 .orElseThrow(() -> {
                     log.error("Заявка с ID: {} не найдена", requestId);
                     return new NotFoundException("Не найдена заявка с ID: " + requestId);
                 });
+        log.info("request - " + request);
+        return request;
     }
 
     private RequestStatusEntity getRequestStatusEntityByRequestStatus(RequestStatus newStatus) {

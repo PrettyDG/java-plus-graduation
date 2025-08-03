@@ -19,31 +19,31 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
-public class CategoryExceptionHandler {
+public class RequestExceptionHandler {
 
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<CategoryExceptionHandler.ErrorResponse> handleNotFoundException(NotFoundException e) {
+    public ResponseEntity<RequestExceptionHandler.ErrorResponse> handleNotFoundException(NotFoundException e) {
         log.error("Объект не найден");
-        return new ResponseEntity<>(new CategoryExceptionHandler.ErrorResponse(e.getMessage()), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new RequestExceptionHandler.ErrorResponse(e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<CategoryExceptionHandler.ErrorResponse> handleValidationException(ValidationException e) {
+    public ResponseEntity<RequestExceptionHandler.ErrorResponse> handleValidationException(ValidationException e) {
         log.error("Ошибка с заполнением полей");
-        return new ResponseEntity<>(new CategoryExceptionHandler.ErrorResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new RequestExceptionHandler.ErrorResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<CategoryExceptionHandler.ErrorResponse> handleException(ConflictException e) {
+    public ResponseEntity<RequestExceptionHandler.ErrorResponse> handleException(ConflictException e) {
         log.error("Данное действие уже выполнено");
-        return new ResponseEntity<>(new CategoryExceptionHandler.ErrorResponse(e.getMessage()), HttpStatus.CONFLICT);
+        return new ResponseEntity<>(new RequestExceptionHandler.ErrorResponse(e.getMessage()), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(DuplicateException.class)
-    public ResponseEntity<CategoryExceptionHandler.ErrorResponse> handleException(Exception e) {
+    public ResponseEntity<RequestExceptionHandler.ErrorResponse> handleException(Exception e) {
         log.error("Данное действие уже выполнено");
-        return new ResponseEntity<>(new CategoryExceptionHandler.ErrorResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new RequestExceptionHandler.ErrorResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -64,16 +64,12 @@ public class CategoryExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Map<String, String>> handleConflict(DataIntegrityViolationException ex) {
-        String message = ex.getMostSpecificCause().getMessage();
-
-        if (message != null && message.contains("events_category_id_fkey")) {
-            message = "Невозможно удалить категорию, она используется в событиях.";
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(Map.of("error", message));
+        String message = "Resource conflict: " + ex.getRootCause().getMessage();
+        if (message.contains("categories_name_key")) {
+            message = "Category with this name already exists.";
         }
-
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(Map.of("error", "Конфликт данных: " + message));
+                .body(Map.of("error", message));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
