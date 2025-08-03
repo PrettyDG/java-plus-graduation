@@ -32,7 +32,7 @@ public class AdminEventController {
     private final EventService eventService;
 
     @GetMapping
-    public ResponseEntity<List<EventFullDto>> searchEventsByAdmin(
+    public List<EventShownDto> searchEventsByAdmin(
             @RequestParam(required = false) List<Long> users,
             @RequestParam(required = false) List<String> stateStrings,
             @RequestParam(required = false) List<Long> categoriesIds,
@@ -61,8 +61,11 @@ public class AdminEventController {
                         .rangeEnd(rangeEnd)
                         .pageRequest(pageRequest)
                         .build();
-        return ResponseEntity.ok(eventService.searchEventsByAdmin(searchAdminEventsParamDto)
-        );
+        List<EventFullDto> eventFullDtos = eventService.searchEventsByAdmin(searchAdminEventsParamDto);
+        List<EventShownDto> eventShownDtos = eventFullDtos.stream()
+                .map(EventMapper::toShownDto)
+                .collect(Collectors.toList());
+        return eventShownDtos;
     }
 
     @PatchMapping("/{eventId}")

@@ -12,10 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.event.EventFullDto;
-import ru.practicum.event.EventShortDto;
-import ru.practicum.event.NewEventDto;
-import ru.practicum.event.UpdateEventUserRequest;
+import ru.practicum.event.*;
+import ru.practicum.mapper.EventMapper;
 import ru.practicum.request.EventRequestStatusUpdateRequest;
 import ru.practicum.request.ParticipationRequestDto;
 import ru.practicum.service.EventService;
@@ -48,12 +46,13 @@ public class PrivateEventController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<EventFullDto> createEvent(
+    public EventShownDto createEvent(
             @PathVariable @Positive Long userId,
             @RequestBody @Valid @DateTimeFormat(pattern = DATE_TIME_PATTERN) NewEventDto newEventDto) {
         log.info("Запрос на добавление нового события для пользователя user ID {}: {}", userId, newEventDto);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(eventService.createEvent(userId, newEventDto));
+        EventFullDto eventFullDto = eventService.createEvent(userId, newEventDto);
+        EventShownDto eventShownDto = EventMapper.toShownDto(eventFullDto);
+        return eventShownDto;
     }
 
     @GetMapping("/{eventId}")
