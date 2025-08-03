@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.StatClient;
 import ru.practicum.event.EventFullDto;
 import ru.practicum.event.EventShortDto;
+import ru.practicum.event.EventShownDto;
 import ru.practicum.event.SearchPublicEventsParamDto;
 import ru.practicum.exceptions.ValidationException;
+import ru.practicum.mapper.EventMapper;
 import ru.practicum.model.EventSort;
 import ru.practicum.service.EventService;
 import ru.practicum.stat.dto.EndpointHitDto;
@@ -68,7 +70,7 @@ public class PublicEventController {
     }
 
     @GetMapping
-    public ResponseEntity<List<EventShortDto>> searchPublicEvents(
+    public List<EventShortDto> searchPublicEvents(
             @RequestParam(defaultValue = DEFAULT_TEXT) String text,
             @RequestParam(name = "categories", required = false) List<Long> categoriesIds,
             @RequestParam(required = false) Boolean paid,
@@ -124,11 +126,12 @@ public class PublicEventController {
         log.info("Обновляем статистику");
         saveStat(request);
 
-        return ResponseEntity.ok(eventShortDtos);
+
+        return eventShortDtos;
     }
 
     @GetMapping("/{eventId}")
-    public ResponseEntity<EventFullDto> getEvent(
+    public EventShownDto getEvent(
             @PathVariable @Positive Long eventId,
             HttpServletRequest request) {
         log.info("Запрос на получение опубликованого события с id {}", eventId);
@@ -148,7 +151,8 @@ public class PublicEventController {
         log.info("Обновляем статистику");
         if (eventFullDto.getId() != null) saveStat(request);
 
-        return ResponseEntity.ok(eventFullDto);
+        EventShownDto eventShownDto = EventMapper.toShownDto(eventFullDto);
+        return eventShownDto;
     }
 
     private PageRequest createPageRequest(int from, int size, EventSort sort) {
