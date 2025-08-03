@@ -5,7 +5,6 @@ import lombok.experimental.UtilityClass;
 import ru.practicum.model.Request;
 import ru.practicum.model.RequestStatusEntity;
 import ru.practicum.request.ParticipationRequestDto;
-import ru.practicum.user.UserDto;
 
 @UtilityClass
 public class RequestMapper {
