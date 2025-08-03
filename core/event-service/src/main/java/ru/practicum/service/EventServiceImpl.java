@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import ru.practicum.category.CategoryDto;
 import ru.practicum.client.CategoryClient;
-
 import ru.practicum.client.UserClient;
 import ru.practicum.clients.RequestClient;
 import ru.practicum.event.*;

@@ -1,7 +1,10 @@
 package ru.practicum.request;
 
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import ru.practicum.user.UserDto;
 
 import java.time.LocalDateTime;
