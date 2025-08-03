@@ -1,0 +1,30 @@
+application:
+  date-time-format: yyyy-MM-dd HH:mm:ss
+
+server:
+  port: 0
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+      format_sql: true
+      jdbc:
+        time_zone: UTC
+  sql:
+    init:
+      mode: always
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/smart-home-tech
+    username: postgres
+    password: password
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+stat-server:
+  service-id: stats-server

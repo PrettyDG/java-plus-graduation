@@ -22,15 +22,13 @@ import java.util.List;
 import java.util.Map;
 
 public class StatClient {
+    private static final String HIT_ENDPOINT = "/hit";
+    private static final String STATS_ENDPOINT = "/stats";
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+    protected final RestClient restClient;
     private final DiscoveryClient discoveryClient;
     private final RetryTemplate retryTemplate;
     private final String statsServiceId;
-    protected final RestClient restClient;
-
-    private static final String HIT_ENDPOINT = "/hit";
-    private static final String STATS_ENDPOINT = "/stats";
-
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
     public StatClient(DiscoveryClient discoveryClient, String statsServiceId) {
         this.discoveryClient = discoveryClient;
@@ -84,6 +82,7 @@ public class StatClient {
 
     private URI makeUri(String path, Map<String, Object> queryParams) {
         ServiceInstance instance = retryTemplate.execute(context -> getInstance());
+
 
         UriComponentsBuilder builder = UriComponentsBuilder
                 .newInstance()
