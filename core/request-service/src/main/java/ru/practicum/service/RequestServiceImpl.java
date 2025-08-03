@@ -68,18 +68,25 @@ public class RequestServiceImpl implements RequestService {
     public List<ParticipationRequestDto> saveAll(List<ParticipationRequestDto> requestDtos) {
         log.debug("Запрос на массовое сохранение заявок: {}", requestDtos.size());
 
+
         List<Request> requests = requestDtos.stream()
-                .map(RequestMapper::toEntity)
+                .map(dto -> {
+                    RequestStatusEntity statusEntity = requestStatusRepository.findByName(dto.getStatus())
+                            .orElseThrow(() -> new RuntimeException("Unknown status: " + dto.getStatus()));
+                    return RequestMapper.toEntity(dto, statusEntity);
+                })
                 .collect(Collectors.toList());
 
-        List<Request> saved = requestRepository.saveAll(requests);
+        requestRepository.saveAll(requests);
+        log.info("requests - " + requests);
 
-        List<ParticipationRequestDto> result = saved.stream()
+        List<ParticipationRequestDto> result = requests.stream()
                 .map(request -> {
                     UserDto userDto = userClient.getUser(request.getRequesterId());
                     return RequestMapper.toRequestDto(request, userDto);
                 })
                 .collect(Collectors.toList());
+        log.info("result - " + result);
 
         log.info("Массовое сохранение заявок завершено, сохранено: {}", result.size());
         return result;

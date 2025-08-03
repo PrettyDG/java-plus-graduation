@@ -14,8 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import ru.practicum.category.CategoryDto;
 import ru.practicum.client.CategoryClient;
-import ru.practicum.client.RequestClient;
+
 import ru.practicum.client.UserClient;
+import ru.practicum.clients.RequestClient;
 import ru.practicum.event.*;
 import ru.practicum.exceptions.ConflictException;
 import ru.practicum.exceptions.NotFoundException;
@@ -472,9 +473,10 @@ public class EventServiceImpl implements EventService {
     private void updateRequestStatuses(List<ParticipationRequestDto> requests, RequestStatus status) {
         log.info("updateRequestStatuses - " + requests + ", - " + status);
         RequestStatus requestStatus = requestClient.getStatusByName(status.name());
+        log.info("requestStatus - " + requestStatus);
 
         requests.forEach(request -> request.setStatus(requestStatus));
-
+        log.info("Requests - " + requests);
         requestClient.saveAll(requests);
     }
 

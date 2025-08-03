@@ -18,7 +18,7 @@ public class RequestMapper {
                 .build();
     }
 
-    public static Request toEntity(ParticipationRequestDto dto) {
+    public static Request toEntity(ParticipationRequestDto dto, RequestStatusEntity requestStatusEntity) {
         if (dto == null) {
             return null;
         }
@@ -29,12 +29,7 @@ public class RequestMapper {
         request.setRequesterId(dto.getRequester().getId());
         request.setEventId(dto.getEvent());
         request.setCreated(dto.getCreated());
-
-        if (dto.getStatus() != null) {
-            RequestStatusEntity statusEntity = new RequestStatusEntity();
-            statusEntity.setName(dto.getStatus());
-            request.setStatus(statusEntity);
-        }
+        request.setStatus(requestStatusEntity);
 
         return request;
     }

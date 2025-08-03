@@ -1,13 +1,14 @@
 package ru.practicum.request;
 
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import ru.practicum.user.UserDto;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
+@ToString
 @Builder
 public class ParticipationRequestDto {
 
