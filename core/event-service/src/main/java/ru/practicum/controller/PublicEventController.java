@@ -43,6 +43,12 @@ public class PublicEventController {
     private final StatClient statClient;
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
+    @GetMapping("/exists-by-category")
+    public boolean existsByCategoryId(@RequestParam Long categoryId) {
+        log.info("existsByCategoryId - " + categoryId);
+        return eventService.existsByCategoryId(categoryId);
+    }
+
     @GetMapping("/events/{eventId}")
     EventFullDto getEventById(@PathVariable("eventId") Long eventId) {
         log.info("getEventDtoById - " + eventId);

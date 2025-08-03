@@ -7,8 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.CategoryDto;
 import ru.practicum.category.CategoryUpdateDto;
+import ru.practicum.clients.EventClient;
 import ru.practicum.exceptions.ConflictException;
 import ru.practicum.exceptions.NotFoundException;
+import ru.practicum.exceptions.ValidationException;
 import ru.practicum.mapper.CategoryMapper;
 import ru.practicum.model.Category;
 import ru.practicum.repository.CategoryRepository;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class CategoryServiceImpl implements CategoryService {
 
+    private final EventClient eventClient;
     private final CategoryRepository categoryRepository;
 
     @Override
@@ -72,6 +75,9 @@ public class CategoryServiceImpl implements CategoryService {
     public void deleteById(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new NotFoundException("Категория не найдена"));
+        if (eventClient.existsByCategoryId(categoryId)) {
+            throw new ConflictException("Нельзя удалить категорию, она уже используется");
+        }
         categoryRepository.deleteById(categoryId);
     }
 

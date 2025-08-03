@@ -27,7 +27,7 @@ public class Event {
     @Column(name = "annotation", columnDefinition = "TEXT")
     private String annotation;
 
-    @JoinColumn(name = "category_id")
+    @Column(name = "category_id", nullable = false)
     private Long categoryId;
 
     @Column(name = "paid")

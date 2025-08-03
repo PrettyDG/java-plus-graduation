@@ -52,6 +52,12 @@ public class EventServiceImpl implements EventService {
     private final RequestClient requestClient;
 
     @Override
+    public boolean existsByCategoryId(Long categoryId) {
+        boolean isExist = eventRepository.existsByCategoryId(categoryId);
+        log.info("isExist - " + isExist);
+        return isExist;
+    }
+    @Override
     public EventFullDto getEventDtoById(Long eventId) {
         Event event = eventRepository.findById(eventId).get();
         log.info("Event - " + event + ", UserForEvent - " + event.getInitiatorId());

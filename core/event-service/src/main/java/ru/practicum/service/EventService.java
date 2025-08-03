@@ -11,6 +11,8 @@ import java.util.Map;
 
 public interface EventService {
 
+    boolean existsByCategoryId(Long categoryId);
+
     EventFullDto getEventDtoById(Long id);
 
     void updateConfirmedRequests(Long eventId, int delta);

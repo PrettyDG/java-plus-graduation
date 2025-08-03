@@ -27,4 +27,7 @@ public interface EventClient {
     @PostMapping("/events/{id}/confirmed")
     void updateConfirmedRequests(@PathVariable("id") Long eventId, @RequestParam int delta);
 
+    @GetMapping("/events/exists-by-category")
+    boolean existsByCategoryId(@RequestParam("categoryId") Long categoryId);
+
 }
