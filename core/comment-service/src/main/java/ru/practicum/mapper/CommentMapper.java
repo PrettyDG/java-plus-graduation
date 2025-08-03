@@ -1,6 +1,7 @@
 package ru.practicum.mapper;
 
 
+import lombok.experimental.UtilityClass;
 import ru.practicum.comment.CommentRequestDto;
 import ru.practicum.comment.CommentResponseDto;
 import ru.practicum.event.EventFullDto;
@@ -10,6 +11,7 @@ import ru.practicum.user.UserDto;
 
 import java.time.LocalDateTime;
 
+@UtilityClass
 public class CommentMapper {
 
     public static Comment toComment(CommentRequestDto commentRequestDto,

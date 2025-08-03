@@ -38,6 +38,7 @@ public class RequestServiceImpl implements RequestService {
     private final RequestValidator requestValidator;
 
     @Override
+    @Transactional(readOnly = true)
     public List<ParticipationRequestDto> findByEventId(Long eventId) {
         log.debug("Запрос на получение заявок по событию с ID: {}", eventId);
         List<ParticipationRequestDto> result = requestRepository.findByEventId(eventId).stream()
@@ -51,6 +52,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ParticipationRequestDto> findByIds(List<Long> ids) {
         log.debug("Запрос на получение заявок по списку ID: {}", ids);
         List<ParticipationRequestDto> result = requestRepository.findAllById(ids).stream()
@@ -63,7 +65,6 @@ public class RequestServiceImpl implements RequestService {
         return result;
     }
 
-    @Transactional
     @Override
     public List<ParticipationRequestDto> saveAll(List<ParticipationRequestDto> requestDtos) {
         log.debug("Запрос на массовое сохранение заявок: {}", requestDtos.size());
@@ -142,6 +143,7 @@ public class RequestServiceImpl implements RequestService {
         return RequestMapper.toRequestDto(request, user);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public RequestStatus getStatusByName(String name) {
         RequestStatusEntity requestStatusEntity = requestStatusRepository.findByName(RequestStatus.valueOf(name))
@@ -153,6 +155,7 @@ public class RequestServiceImpl implements RequestService {
         return requestStatusEntity.getName();
     }
 
+    @Transactional(readOnly = true)
     private UserDto getUserById(Long userId) {
         log.debug("Получение пользователя по ID: {}", userId);
         try {
@@ -165,6 +168,7 @@ public class RequestServiceImpl implements RequestService {
         }
     }
 
+    @Transactional(readOnly = true)
     private EventFullDto getEventById(Long userId, Long eventId) {
         log.info("Получение события по ID: {}", eventId);
         try {
@@ -177,6 +181,7 @@ public class RequestServiceImpl implements RequestService {
         }
     }
 
+    @Transactional(readOnly = true)
     private Request getRequestById(Long requestId) {
         log.debug("Получение заявки по ID: {}", requestId);
         Request request = requestRepository.findById(requestId)
@@ -188,6 +193,7 @@ public class RequestServiceImpl implements RequestService {
         return request;
     }
 
+    @Transactional(readOnly = true)
     private RequestStatusEntity getRequestStatusEntityByRequestStatus(RequestStatus newStatus) {
         log.debug("Получение сущности статуса по статусу: {}", newStatus);
         return requestStatusRepository.findByName(newStatus)
@@ -197,6 +203,7 @@ public class RequestServiceImpl implements RequestService {
                 });
     }
 
+    @Transactional(readOnly = true)
     private Request buildNewRequest(UserDto user, EventFullDto event) {
         log.debug("Построение новой заявки для пользователя ID: {} и события ID: {}", user.getId(), event.getId());
         RequestStatusEntity requestStatusEntity = getRequestStatusEntityByRequestStatus(RequestStatus.PENDING);

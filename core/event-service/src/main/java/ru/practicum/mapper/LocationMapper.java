@@ -1,9 +1,11 @@
 package ru.practicum.mapper;
 
 
+import lombok.experimental.UtilityClass;
 import ru.practicum.event.LocationDto;
 import ru.practicum.model.Location;
 
+@UtilityClass
 public class LocationMapper {
 
     public static LocationDto toDto(Location location) {

@@ -38,6 +38,7 @@ public class CommentServiceImpl implements CommentService {
 
     EventClient eventClient;
 
+    @Transactional(readOnly = true)
     @Override
     public List<CommentResponseDto> findAll(Long userId,
                                             Long eventId,
@@ -109,6 +110,7 @@ public class CommentServiceImpl implements CommentService {
         log.info("Все комментарии у события с id = {} успешно удалены", eventId);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<CommentResponseDto> findByEvent(Long eventId,
                                                 PageRequest pageRequest) {
@@ -121,12 +123,14 @@ public class CommentServiceImpl implements CommentService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public CommentResponseDto findById(final Long commentId) {
         Comment comment = getCommentById(commentId);
         return CommentMapper.toCommentResponseDto(comment, eventClient.getEventShort(commentId));
     }
 
+    @Transactional(readOnly = true)
     private UserDto getUserById(Long userId) {
         try {
             return userClient.getUser(userId);
@@ -135,6 +139,7 @@ public class CommentServiceImpl implements CommentService {
         }
     }
 
+    @Transactional(readOnly = true)
     private EventFullDto getEventById(Long eventId) {
         try {
             return eventClient.getEventById(eventId);
@@ -143,6 +148,7 @@ public class CommentServiceImpl implements CommentService {
         }
     }
 
+    @Transactional(readOnly = true)
     private EventShortDto getShortEventById(Long eventId) {
         try {
             return eventClient.getEventShort(eventId);
@@ -151,6 +157,7 @@ public class CommentServiceImpl implements CommentService {
         }
     }
 
+    @Transactional(readOnly = true)
     private Comment getCommentById(Long commentId) {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new NotFoundException("Комментария с id = {} нет." + commentId));

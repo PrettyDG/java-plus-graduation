@@ -71,6 +71,7 @@ public class EventServiceImpl implements EventService {
         log.info("Сохранён event после updateConfirmedRequests - " + event);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public EventShortDto getEventShort(Long id) {
         Event event = eventRepository.findById(id).get();
@@ -82,6 +83,7 @@ public class EventServiceImpl implements EventService {
         return eventShortDto;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<EventShortDto> getEventsShortDto(List<Long> ids) {
         log.info("getEventsShortDto - " + ids);
@@ -348,6 +350,7 @@ public class EventServiceImpl implements EventService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     private UserDto getUserById(Long userId) {
         log.info("getUserById - " + userId);
         try {
@@ -357,12 +360,14 @@ public class EventServiceImpl implements EventService {
         }
     }
 
+    @Transactional(readOnly = true)
     private Event getEventById(Long eventId) {
         log.info("getEventById, eventId - " + eventId);
         return eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Не найдено событие с ID: " + eventId));
     }
 
+    @Transactional(readOnly = true)
     private CategoryDto getCategoryById(Long categoryId) {
         log.info("getCategoryById - " + categoryId);
         try {
@@ -453,6 +458,7 @@ public class EventServiceImpl implements EventService {
         }
     }
 
+    @Transactional(readOnly = true)
     private List<ParticipationRequestDto> getAndValidateRequests(Long eventId, List<Long> requestIds) {
         log.info("getAndValidateRequests - " + eventId + ", - " + requestIds);
         List<ParticipationRequestDto> requests = requestClient.getRequestsByIds(requestIds);

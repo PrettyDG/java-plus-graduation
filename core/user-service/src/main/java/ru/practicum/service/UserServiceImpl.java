@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.exceptions.ConflictException;
 import ru.practicum.exceptions.NotFoundException;
 import ru.practicum.mapper.UserMapper;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@Transactional
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
@@ -31,6 +33,7 @@ public class UserServiceImpl implements UserService {
         return UserMapper.toDto(user);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<UserDto> getAll(int from, int size) {
         Pageable pageable = PageRequest.of(from / size, size);
@@ -40,6 +43,7 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<UserDto> getById(Long id) {
         List<UserDto> userDtos = userRepository.findById(id).stream()
@@ -49,6 +53,7 @@ public class UserServiceImpl implements UserService {
         return userDtos;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public UserDto getUser(Long id) {
         UserDto userDto = UserMapper.toDto(userRepository.findById(id).get());

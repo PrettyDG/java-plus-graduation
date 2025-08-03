@@ -43,6 +43,7 @@ public class CategoryServiceImpl implements CategoryService {
         return CategoryMapper.toDto(categoryRepository.save(category));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<CategoryDto> getAll() {
         return categoryRepository.findAll().stream()
@@ -50,6 +51,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<CategoryDto> getAllPaged(int from, int size) {
         Pageable pageable = PageRequest.of(from / size, size);
@@ -58,6 +60,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public CategoryDto getById(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
