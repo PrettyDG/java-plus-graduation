@@ -11,7 +11,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.StatClient;
 import ru.practicum.event.EventFullDto;
 import ru.practicum.event.EventShortDto;
 import ru.practicum.event.SearchPublicEventsParamDto;
