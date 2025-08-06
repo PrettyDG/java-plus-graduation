@@ -23,7 +23,7 @@ public class KafkaProducerConfig {
 
     @Bean
     public ProducerFactory<String, UserActionAvro> kafkaProducer() {
-                Map<String, Object> props = Map.of(
+        Map<String, Object> props = Map.of(
                 ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers(),
                 ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, kafkaProperties.getProducer().getKeySerializer(),
                 ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, kafkaProperties.getProducer().getValueSerializer()

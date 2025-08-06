@@ -1,7 +1,7 @@
 package ru.practicum.mapper;
 
-import ru.practicum.ewm.stats.avro.UserActionAvro;
 import ru.practicum.ewm.stats.avro.ActionTypeAvro;
+import ru.practicum.ewm.stats.avro.UserActionAvro;
 import ru.practicum.grpc.stats.action.ActionTypeProto;
 import ru.practicum.grpc.stats.action.UserActionProto;
 
