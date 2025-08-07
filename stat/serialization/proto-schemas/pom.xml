@@ -48,7 +48,7 @@
             <plugin>
                 <groupId>io.github.ascopes</groupId>
                 <artifactId>protobuf-maven-plugin</artifactId>
-
+                <version>${protobuf-plugin.version}</version>
                 <configuration>
                     <protocVersion>${protobuf.version}</protocVersion>
 
