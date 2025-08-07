@@ -11,6 +11,8 @@ import java.util.Map;
 
 public interface EventService {
 
+    void addLike(long userId, Long eventId);
+
     boolean existsByCategoryId(Long categoryId);
 
     EventFullDto getEventDtoById(Long id);
@@ -49,5 +51,6 @@ public interface EventService {
     List<EventShortDto> searchPublicEvents(SearchPublicEventsParamDto searchPublicEventsParamDto);
 
     EventFullDto getPublicEvent(Long eventId,
-                                HttpServletRequest request);
+                                HttpServletRequest request,
+                                long userId);
 }

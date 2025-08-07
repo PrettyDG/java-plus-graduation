@@ -11,10 +11,15 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.AnalyzerClient;
+import ru.practicum.CollectorClient;
 import ru.practicum.event.EventFullDto;
+import ru.practicum.event.EventRecommend;
 import ru.practicum.event.EventShortDto;
 import ru.practicum.event.SearchPublicEventsParamDto;
 import ru.practicum.exceptions.ValidationException;
+import ru.practicum.grpc.stats.action.ActionTypeProto;
+import ru.practicum.grpc.stats.recommendation.RecommendedEventProto;
 import ru.practicum.model.EventSort;
 import ru.practicum.service.EventService;
 import ru.practicum.stat.dto.EndpointHitDto;
@@ -22,6 +27,7 @@ import ru.practicum.stat.dto.ViewStatsDto;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -39,8 +45,30 @@ public class PublicEventController {
     private static final int START_SEARCH_DATE_PERIOD = 100;
     private static final int END_SEARCH_DATE_PERIOD = 300;
     private final EventService eventService;
-    private final StatClient statClient;
+    private final AnalyzerClient analyzerClient;
+    private final CollectorClient collectorClient;
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
+
+    @GetMapping("/recommendations")
+    public List<EventRecommend> getRecommendations (@RequestHeader("X-EWM-USER-ID") long userId,
+                                                    @RequestParam(defaultValue = "10") int maxResults) {
+        var recommendationList = analyzerClient.getRecommendations(userId, maxResults).toList();
+
+        List<EventRecommend> eventRecommends = new ArrayList<>();
+
+        for (RecommendedEventProto eventProto : recommendationList) {
+            eventRecommends.add(new EventRecommend(eventProto.getEventId(), eventProto.getScore()));
+        }
+        return eventRecommends;
+    }
+
+    @PutMapping("/{eventId}/like")
+    public void likeEvent(@PathVariable Long eventId,
+                          @RequestHeader("X-EWM-USER-ID") long userId) {
+        eventService.addLike(userId, eventId);
+
+        collectorClient.sendUserAction(userId, eventId, ActionTypeProto.ACTION_LIKE);
+    }
 
     @GetMapping("/exists-by-category")
     public boolean existsByCategoryId(@RequestParam Long categoryId) {
@@ -107,52 +135,16 @@ public class PublicEventController {
         List<EventShortDto> eventShortDtos = eventService.searchPublicEvents(searchPublicEventsParamDto);
         List<Long> eventShortDtoIds = eventShortDtos.stream().map(EventShortDto::getId).toList();
 
-        log.info("Запрос статистики для событий с id {}", eventShortDtoIds);
-        String start = rangeStart.format(dateTimeFormatter);
-        String end = rangeEnd.format(dateTimeFormatter);
-        List<String> uris = buildUrisFromPathAndIds(request.getRequestURI(), eventShortDtoIds);
-        List<ViewStatsDto> viewStatsDtos = getStatisticsEventViews(start,
-                end, uris, true);
-        Map<Long, Long> viewsMap = viewStatsDtos.stream()
-                .collect(Collectors.toMap(
-                        stats -> {
-                            String[] parts = stats.getUri().split("/");
-                            return Long.parseLong(parts[parts.length - 1]);
-                        },
-                        ViewStatsDto::getHits,
-                        (existing, replacement) -> existing
-                ));
-
-        eventShortDtos.forEach(dto ->
-                dto.setViews(viewsMap.getOrDefault(dto.getId(), 0L))
-        );
-        log.info("Обновляем статистику");
-        saveStat(request);
-
-
         return eventShortDtos;
     }
 
     @GetMapping("/{eventId}")
     public EventFullDto getEvent(
             @PathVariable @Positive Long eventId,
-            HttpServletRequest request) {
+            HttpServletRequest request,
+            @RequestHeader("X-EWM-USER-ID") long userId) {
         log.info("Запрос на получение опубликованого события с id {}", eventId);
-        EventFullDto eventFullDto = eventService.getPublicEvent(eventId, request);
-
-        log.info("Запрос статистики для события с id {}", eventId);
-        String start = LocalDateTime.now().minusYears(START_SEARCH_DATE_PERIOD).format(dateTimeFormatter);
-        String end = LocalDateTime.now().plusYears(END_SEARCH_DATE_PERIOD).format(dateTimeFormatter);
-        List<ViewStatsDto> viewStatsDtos = getStatisticsEventViews(start,
-                end, List.of(request.getRequestURI()), true);
-        if (viewStatsDtos.size() != 0) {
-            eventFullDto.setViews(viewStatsDtos.get(0).getHits());
-        } else {
-            eventFullDto.setViews(0L);
-        }
-
-        log.info("Обновляем статистику");
-        if (eventFullDto.getId() != null) saveStat(request);
+        EventFullDto eventFullDto = eventService.getPublicEvent(eventId, request, userId);
 
         return eventFullDto;
     }
@@ -170,30 +162,6 @@ public class PublicEventController {
         if (start != null && end != null && start.isAfter(end)) {
             throw new ValidationException("Время начала должно быть до окончания");
         }
-    }
-
-    public void saveStat(HttpServletRequest request) {
-        EndpointHitDto hitDto = EndpointHitDto.builder()
-                .app("ewm-service-1")
-                .uri(request.getRequestURI())
-                .ip(request.getRemoteAddr())
-                .timestamp(LocalDateTime.now())
-                .build();
-        statClient.saveStatEvent(hitDto);
-    }
-
-    public List<ViewStatsDto> getStatisticsEventViews(String start,
-                                                      String end,
-                                                      List<String> uris,
-                                                      boolean unique) {
-        ResponseEntity<List<ViewStatsDto>> response = statClient.getStats(
-                start,
-                end,
-                uris,
-                unique
-        );
-
-        return response.getBody();
     }
 
     public List<String> buildUrisFromPathAndIds(String uriPath, List<Long> ids) {

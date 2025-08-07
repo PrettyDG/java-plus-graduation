@@ -66,4 +66,6 @@ public class Event {
 
     @Column(name = "confirmed_requests")
     private Integer confirmedRequests;
+
+    private Double rating;
 }

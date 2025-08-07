@@ -21,4 +21,8 @@ public interface RequestClient {
 
     @GetMapping("/requests/statuses/{name}")
     RequestStatus getStatusByName(@PathVariable("name") String name);
+
+    @GetMapping("/exist/{eventId}/{userId}")
+    boolean isRequestExist(@PathVariable Long eventId,
+                           @PathVariable Long userId);
 }
