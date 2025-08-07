@@ -22,9 +22,12 @@ spring:
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
+      request.timeout.ms: 60000
       group-id: aggregator-group
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: deserializer.AvroDeserializer
+      properties:
+        socket.connection.setup.timeout.max.ms: 60000
 
 management:
   endpoints:
