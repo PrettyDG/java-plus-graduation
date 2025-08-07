@@ -19,21 +19,15 @@ spring:
     url: jdbc:postgresql://localhost:5432/smart-home-tech
     username: postgres
     password: password
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: aggregator-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: deserializer.AvroDeserializer
 
 management:
   endpoints:
     web:
       exposure:
         include: "*"
-
-kafka:
-  bootstrap-servers: localhost:9092
-  consumer:
-    topic: stats.user-actions.v1
-    group-id: aggregator-actions
-    key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-    value-deserializer: deserializer.AvroDeserializer
-  producer:
-    topic: stats.events-similarity.v1
-    key-serializer: org.apache.kafka.common.serialization.StringSerializer
-    value-serializer: serializer.AvroSerializer
