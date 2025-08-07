@@ -360,7 +360,7 @@ public class EventServiceImpl implements EventService {
         }
         UserDto userDto = getUserById(event.getInitiatorId());
         CategoryDto categoryDto = getCategoryById(event.getCategoryId());
-        collectorClient.sendUserAction(userId,eventId, ActionTypeProto.ACTION_VIEW);
+        collectorClient.sendUserAction(userId, eventId, ActionTypeProto.ACTION_VIEW);
         double rating = analyzerClient.getInteractionsCount(List.of(eventId)).get(eventId);
         EventFullDto eventFullDto = EventMapper.toFullDto(event, categoryDto, userDto, rating);
         log.info("Возвращаем eventFullDto - " + eventFullDto + "userId - " + eventFullDto.getInitiator().getId());

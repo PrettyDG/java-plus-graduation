@@ -22,14 +22,11 @@ import ru.practicum.grpc.stats.action.ActionTypeProto;
 import ru.practicum.grpc.stats.recommendation.RecommendedEventProto;
 import ru.practicum.model.EventSort;
 import ru.practicum.service.EventService;
-import ru.practicum.stat.dto.EndpointHitDto;
-import ru.practicum.stat.dto.ViewStatsDto;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -50,8 +47,8 @@ public class PublicEventController {
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
     @GetMapping("/recommendations")
-    public List<EventRecommend> getRecommendations (@RequestHeader("X-EWM-USER-ID") long userId,
-                                                    @RequestParam(defaultValue = "10") int maxResults) {
+    public List<EventRecommend> getRecommendations(@RequestHeader("X-EWM-USER-ID") long userId,
+                                                   @RequestParam(defaultValue = "10") int maxResults) {
         var recommendationList = analyzerClient.getRecommendations(userId, maxResults).toList();
 
         List<EventRecommend> eventRecommends = new ArrayList<>();
