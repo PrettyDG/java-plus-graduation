@@ -36,4 +36,4 @@ kafka:
   producer:
     topic: stats.events-similarity.v1
     key-serializer: org.apache.kafka.common.serialization.StringSerializer
-    value-serializer: deserializer.AvroDeserializer
+    value-serializer: serializer.AvroSerializer
