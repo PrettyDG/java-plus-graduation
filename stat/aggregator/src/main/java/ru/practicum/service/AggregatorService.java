@@ -29,6 +29,7 @@ public class AggregatorService {
             ActionTypeAvro.LIKE, 1.0
     );
     public void handle(UserActionAvro action) {
+        log.info("AggregatorService-handle, action - {}", action);
         long eventId = action.getEventId();
         long userId = action.getUserId();
         Instant timestamp = action.getTimestamp();

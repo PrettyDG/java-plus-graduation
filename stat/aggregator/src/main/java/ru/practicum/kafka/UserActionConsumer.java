@@ -17,7 +17,7 @@ public class UserActionConsumer {
 
     @KafkaListener(topics = "stats.user-actions.v1", containerFactory = "kafkaListenerFactory")
     public void consume(UserActionAvro action) {
-        log.info("User action received - : {}", action);
+        log.info("UserActionConsumer, action - : {}", action);
         aggregatorService.handle(action);
     }
 }

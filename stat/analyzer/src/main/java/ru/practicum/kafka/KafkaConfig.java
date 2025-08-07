@@ -59,7 +59,7 @@ public class KafkaConfig {
         try {
             return Class.forName(className);
         } catch (ClassNotFoundException e) {
-            throw new IllegalArgumentException("Unable to load class: " + className, e);
+            throw new IllegalArgumentException("ClassNotFoundException in KafkaConfig: " + className, e);
         }
     }
 }

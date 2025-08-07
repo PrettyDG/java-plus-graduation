@@ -39,12 +39,12 @@ public class RecommendedController
             }
             responseObserver.onCompleted();
         } catch (IllegalArgumentException e) {
-            log.error("Недопустимый аргумент в getSimilarEvents: {}", e.getMessage(), e);
+            log.error("IllegalArgumentException в getSimilarEvents: {}", e.getMessage(), e);
             responseObserver.onError(
                     new StatusRuntimeException(Status.INVALID_ARGUMENT.withDescription(e.getMessage()).withCause(e))
             );
         } catch (Exception e) {
-            log.error("Непредвиденная ошибка в getSimilarEvents: {}", e.getMessage(), e);
+            log.error("Exception в getSimilarEvents: {}", e.getMessage(), e);
             responseObserver.onError(
                     new StatusRuntimeException(Status.UNKNOWN.withDescription("Произошла непредвиденная ошибка").withCause(e))
             );
@@ -65,12 +65,12 @@ public class RecommendedController
             }
             responseObserver.onCompleted();
         } catch (IllegalArgumentException e) {
-            log.error("Недопустимый аргумент в getRecommendationsForUser: {}", e.getMessage(), e);
+            log.error("IllegalArgumentException в getRecommendationsForUser: {}", e.getMessage(), e);
             responseObserver.onError(
                     new StatusRuntimeException(Status.INVALID_ARGUMENT.withDescription(e.getMessage()).withCause(e))
             );
         } catch (Exception e) {
-            log.error("Непредвиденная ошибка в  getRecommendationsForUser: {}", e.getMessage(), e);
+            log.error("Exception в  getRecommendationsForUser: {}", e.getMessage(), e);
             responseObserver.onError(
                     new StatusRuntimeException(Status.UNKNOWN.withDescription("Произошла непредвиденная ошибка").withCause(e))
             );
@@ -91,12 +91,12 @@ public class RecommendedController
             }
             responseObserver.onCompleted();
         } catch (IllegalArgumentException e) {
-            log.error("Недопустимый аргумент в getInteractionsCount: {}", e.getMessage(), e);
+            log.error("IllegalArgumentException в getInteractionsCount: {}", e.getMessage(), e);
             responseObserver.onError(
                     new StatusRuntimeException(Status.INVALID_ARGUMENT.withDescription(e.getMessage()).withCause(e))
             );
         } catch (Exception e) {
-            log.error("Непредвиденная ошибка в getInteractionsCount: {}", e.getMessage(), e);
+            log.error("Exception в getInteractionsCount: {}", e.getMessage(), e);
             responseObserver.onError(
                     new StatusRuntimeException(Status.UNKNOWN.withDescription("Произошла непредвиденная ошибка").withCause(e))
             );

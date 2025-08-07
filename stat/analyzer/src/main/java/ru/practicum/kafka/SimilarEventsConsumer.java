@@ -19,7 +19,7 @@ public class SimilarEventsConsumer {
             containerFactory = "eventSimilarityKafkaListenerFactory"
     )
     public void consumeEventSimilarity(EventSimilarityAro msg) {
-        log.info("get consumeEventSimilarity: - " + msg);
+        log.info("SimilarEventsConsumer-consumeEventSimilarity, msg: - " + msg);
         similarEventsService.updateEventSimilarity(msg);
     }
 }
