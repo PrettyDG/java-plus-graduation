@@ -32,8 +32,8 @@ kafka:
     topic: stats.user-actions.v1
     group-id: aggregator-actions
     key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-    value-deserializer: ru.practicum.AvroDeserializer
+    value-deserializer: deserializer.AvroDeserializer
   producer:
     topic: stats.events-similarity.v1
     key-serializer: org.apache.kafka.common.serialization.StringSerializer
-    value-serializer: ru.practicum.AvroSerializer
+    value-serializer: deserializer.AvroDeserializer
