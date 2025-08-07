@@ -27,7 +27,7 @@ management:
         include: "*"
 
 kafka:
-  bootstrap-servers: kafka:9092
+  bootstrap-servers: localhost:9092
   user-actions-consumer:
     group-id: analyzer-user-actions
     topic: stats.user-actions.v1
