@@ -1,0 +1,50 @@
+application:
+  date-time-format: yyyy-MM-dd HH:mm:ss
+
+server:
+  port: 0
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+      format_sql: true
+      jdbc:
+        time_zone: UTC
+  sql:
+    init:
+      mode: always
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/smart-home-tech
+    username: postgres
+    password: password
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+kafka:
+  bootstrap-servers: localhost:9092
+  user-actions-consumer:
+    group-id: analyzer-user-actions
+    topic: stats.user-actions.v1
+    key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    value-deserializer: deserializer.AvroDeserializer
+  events-similarity-consumer:
+    group-id: analyzer-events-sim
+    topic: stats.events-similarity.v1
+    key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    value-deserializer: deserializer.AvroDeserializer
+
+grpc:
+  client:
+    analyzer:
+      address: 'discovery:///analyzer'
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
+  server:
+    port: 0
